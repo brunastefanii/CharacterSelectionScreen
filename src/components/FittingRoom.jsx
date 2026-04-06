@@ -362,7 +362,11 @@ export default function FittingRoom() {
                 <button
                   key={h.id}
                   className="fr-item-card"
-                  title={`Hair ${h.id}`}
+                  title="Drag to body to try on"
+                  onMouseDown={e => {
+                    e.preventDefault()
+                    setPanelDrag({ src: h.src, ghostX: e.clientX, ghostY: e.clientY })
+                  }}
                 >
                   <img src={h.src} alt={`Hair ${h.id}`} draggable={false} />
                 </button>
