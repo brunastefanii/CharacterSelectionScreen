@@ -9,6 +9,14 @@ import dress5 from '../assets/dress5.png'
 import dress6 from '../assets/dressed-5.png'
 import dress7 from '../assets/dressed-6.png'
 import dress8 from '../assets/dressed-8.png'
+import hair1 from '../assets/hair1.png'
+import hair2 from '../assets/hair2.png'
+import hair3 from '../assets/hair3.png'
+import hair4 from '../assets/hair4.png'
+import hair5 from '../assets/hair5.png'
+import hair6 from '../assets/hair6.png'
+import hair7 from '../assets/hair7.png'
+import hair8 from '../assets/hair8.png'
 import podium from '../assets/podium.png'
 import body from '../assets/body.png'
 import wheel from '../assets/wheel.svg'
@@ -45,6 +53,19 @@ const INITIAL_DRESSES = [
   { id: 7, src: dress7 },
   { id: 8, src: dress8 },
 ]
+
+const HAIR_OPTIONS = [
+  { id: 1, src: hair1 },
+  { id: 2, src: hair2 },
+  { id: 3, src: hair3 },
+  { id: 4, src: hair4 },
+  { id: 5, src: hair5 },
+  { id: 6, src: hair6 },
+  { id: 7, src: hair7 },
+  { id: 8, src: hair8 },
+]
+
+const PANEL_ICONS = ['dress', 'hair']
 
 export default function FittingRoom() {
   const wrapperRef = useRef(null)
@@ -312,26 +333,45 @@ export default function FittingRoom() {
         {/* Say yes CTA */}
         <button className="fr-cta">Say, yes!</button>
 
-        {/* Right panel — only visible when the dress icon is active */}
-        <div className={`fr-panel ${activeIcon === 'dress' ? 'fr-panel--visible' : ''}`}>
-          <div className="fr-dress-grid">
-            {dresses.map((dress, i) => (
-              <button
-                key={dress.id}
-                className={`fr-dress-card ${i === 2 ? 'fr-dress-card--wide' : ''}`}
-                onMouseDown={e => {
-                  e.preventDefault()
-                  setPanelDrag({ src: dress.src, ghostX: e.clientX, ghostY: e.clientY })
-                }}
-                title="Drag to body to try on"
-              >
-                <img src={dress.src} alt={`Dress ${i + 1}`} draggable={false} />
-              </button>
-            ))}
-          </div>
+        {/* Right panel — visible when dress or hair icon is active */}
+        <div className={`fr-panel ${PANEL_ICONS.includes(activeIcon) ? 'fr-panel--visible' : ''}`}>
+
+          {/* Dress grid */}
+          {activeIcon === 'dress' && (
+            <div className="fr-item-grid">
+              {dresses.map((dress, i) => (
+                <button
+                  key={dress.id}
+                  className={`fr-item-card ${i === 2 ? 'fr-item-card--wide' : ''}`}
+                  onMouseDown={e => {
+                    e.preventDefault()
+                    setPanelDrag({ src: dress.src, ghostX: e.clientX, ghostY: e.clientY })
+                  }}
+                  title="Drag to body to try on"
+                >
+                  <img src={dress.src} alt={`Dress ${i + 1}`} draggable={false} />
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Hair grid */}
+          {activeIcon === 'hair' && (
+            <div className="fr-item-grid">
+              {HAIR_OPTIONS.map((h) => (
+                <button
+                  key={h.id}
+                  className="fr-item-card"
+                  title={`Hair ${h.id}`}
+                >
+                  <img src={h.src} alt={`Hair ${h.id}`} draggable={false} />
+                </button>
+              ))}
+            </div>
+          )}
 
           <div className="fr-panel-footer">
-            <button className="fr-add-btn" onClick={handleAddDress}>
+            <button className="fr-add-btn">
               <span className="fr-plus-h" />
               <span className="fr-plus-v" />
             </button>
