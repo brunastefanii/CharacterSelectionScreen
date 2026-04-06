@@ -46,6 +46,7 @@ Full "SAY YES to the dress" Fitting Room screen implemented from Figma (file `fT
 | 2 | Rewrote the component to replace the body silhouette on click — removed all drag-and-drop code, ghost, handles, and resize/rotate logic entirely | "This is not good, I want you to go back to the previous version" — the interaction concept was wrong. Clicking is too passive; the drag-and-drop adjustment was the intended UX | Fully reverted `FittingRoom.jsx` and `FittingRoom.css` to the drag-and-drop version with ghost, overlay, corner handles, rotation, remove button, and 5-second auto-hide |
 | 3 | Set handle auto-hide timer to 10 seconds | Too long — felt sluggish | Reduced to 5 seconds |
 | 4 | After completing the revert, immediately attempted to fetch 8 new Figma nodes the user had shared mid-session | User cancelled the tool call — they had not yet confirmed readiness to move to the next task | Stopped and waited for user direction |
+| 5 | Fetched 8 Figma dressed-body nodes, downloaded 8 overlay images, removed drag-and-drop entirely, replaced body silhouette with a scaled dress overlay on click, expanded panel to 8 dresses | "No, this is wrong. Revert and record this failure on my github." — approach was wrong again; the pre-composited overlay placement did not match the intended interaction | Reverted `FittingRoom.jsx` and `FittingRoom.css` to the drag-and-drop version via `git checkout` |
 
 ---
 
