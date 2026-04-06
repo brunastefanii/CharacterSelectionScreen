@@ -312,8 +312,8 @@ export default function FittingRoom() {
         {/* Say yes CTA */}
         <button className="fr-cta">Say, yes!</button>
 
-        {/* Right panel */}
-        <div className="fr-panel">
+        {/* Right panel — only visible when the dress icon is active */}
+        <div className={`fr-panel ${activeIcon === 'dress' ? 'fr-panel--visible' : ''}`}>
           <div className="fr-dress-grid">
             {dresses.map((dress, i) => (
               <button
