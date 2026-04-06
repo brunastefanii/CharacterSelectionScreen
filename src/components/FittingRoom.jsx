@@ -1,14 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import './FittingRoom.css'
 
-import stage1 from '../assets/stage1.png'
-import stage2 from '../assets/stage2.png'
-import stage3 from '../assets/stage3.png'
-import stage4 from '../assets/stage4.png'
-import stage5 from '../assets/stage5.png'
-import stage6 from '../assets/stage6.png'
-import stage7 from '../assets/stage7.png'
-import stage8 from '../assets/stage8.png'
 import dress1 from '../assets/dress1.png'
 import dress2 from '../assets/dress2.png'
 import dress3 from '../assets/dress3.png'
@@ -51,22 +43,15 @@ const ACCESSORY_ICONS = [
   { id: 'makeup',    label: 'Makeup',    icon: iconMakeup,    left: 744.21,  top: 382.91 },
 ]
 
-// Body silhouette visual center on the 1920×1080 canvas.
-// Derived from: container left (870.27) minus left-clip (75.97% × 168.799)
-// plus half of rendered image width (259.11% × 168.799 / 2) = 960.62px
-const BODY_CENTER_X = 960.62
-
-// Stage dress Figma dimensions × scale (168.799/237 ≈ 0.7122).
-// Each dress is centered on BODY_CENTER_X; top aligned to body container top (315.24).
 const INITIAL_DRESSES = [
-  { id: 1, src: dress1, stageSrc: stage1, stageW: 385, stageH: 509 },
-  { id: 2, src: dress2, stageSrc: stage2, stageW: 411, stageH: 495 },
-  { id: 3, src: dress3, stageSrc: stage3, stageW: 690, stageH: 501 },
-  { id: 4, src: dress4, stageSrc: stage4, stageW: 450, stageH: 612 },
-  { id: 5, src: dress5, stageSrc: stage5, stageW: 363, stageH: 545 },
-  { id: 6, src: dress6, stageSrc: stage6, stageW: 264, stageH: 474 },
-  { id: 7, src: dress7, stageSrc: stage7, stageW: 657, stageH: 536 },
-  { id: 8, src: dress8, stageSrc: stage8, stageW: 374, stageH: 580 },
+  { id: 1, src: dress1 },
+  { id: 2, src: dress2 },
+  { id: 3, src: dress3 },
+  { id: 4, src: dress4 },
+  { id: 5, src: dress5 },
+  { id: 6, src: dress6 },
+  { id: 7, src: dress7 },
+  { id: 8, src: dress8 },
 ]
 
 const HAIR_OPTIONS = [
@@ -88,7 +73,6 @@ export default function FittingRoom() {
   const [scale, setScale] = useState(1)
   const [activeIcon, setActiveIcon] = useState(null)
   const [dresses, setDresses] = useState(INITIAL_DRESSES)
-  const [selectedDressId, setSelectedDressId] = useState(null)
 
   // Ghost drag from panel: { src, ghostX, ghostY }
   const [panelDrag, setPanelDrag] = useState(null)
@@ -303,26 +287,6 @@ export default function FittingRoom() {
           <img src={body} alt="character" draggable={false} />
         </div>
 
-        {/* Stage dress preview — centered on body visual center, shown on click */}
-        {selectedDressId && (() => {
-          const d = dresses.find(x => x.id === selectedDressId)
-          if (!d) return null
-          return (
-            <img
-              key={d.id}
-              src={d.stageSrc}
-              alt="dress preview"
-              draggable={false}
-              className="fr-stage-dress"
-              style={{
-                width: d.stageW,
-                height: d.stageH,
-                left: BODY_CENTER_X - d.stageW / 2,
-              }}
-            />
-          )
-        })()}
-
         {/* Placed dress overlay */}
         {placedDress && (
           <div
@@ -378,13 +342,12 @@ export default function FittingRoom() {
               {dresses.map((dress, i) => (
                 <button
                   key={dress.id}
-                  className={`fr-item-card ${i === 2 ? 'fr-item-card--wide' : ''} ${selectedDressId === dress.id ? 'fr-item-card--selected' : ''}`}
-                  onClick={() => setSelectedDressId(dress.id)}
+                  className={`fr-item-card ${i === 2 ? 'fr-item-card--wide' : ''}`}
                   onMouseDown={e => {
                     e.preventDefault()
                     setPanelDrag({ src: dress.src, ghostX: e.clientX, ghostY: e.clientY })
                   }}
-                  title="Click to preview · Drag to fine-tune"
+                  title="Drag to body to try on"
                 >
                   <img src={dress.src} alt={`Dress ${i + 1}`} draggable={false} />
                 </button>
