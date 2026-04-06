@@ -42,9 +42,10 @@ Full "SAY YES to the dress" Fitting Room screen implemented from Figma (file `fT
 
 | # | What AI Produced | Why It Was Rejected | What Was Done Instead |
 |---|---|---|---|
-| 1 | Attempted to download assets to `/Users/brunastefani/My project/Assets/` (Unity project) | Wrong project — Unity, not the web app | User corrected path to `/Users/brunastefani/Documents/GitHub/CharacterSelectionScreen` |
-| 2 | Implemented "click dress → replaces body silhouette" interaction | User wanted to go back to drag-and-drop with adjustable overlay | Fully reverted to drag-and-drop with resize/rotate/remove handles |
+| 1 | Started downloading assets to `/Users/brunastefani/My project/Assets/Images/FittingRoom/` — tool use was cancelled mid-execution | That path is a Unity project, not the web app. User interrupted the tool call and provided the correct path | Restarted asset download to `/Users/brunastefani/Documents/GitHub/CharacterSelectionScreen/src/assets/` |
+| 2 | Rewrote the component to replace the body silhouette on click — removed all drag-and-drop code, ghost, handles, and resize/rotate logic entirely | "This is not good, I want you to go back to the previous version" — the interaction concept was wrong. Clicking is too passive; the drag-and-drop adjustment was the intended UX | Fully reverted `FittingRoom.jsx` and `FittingRoom.css` to the drag-and-drop version with ghost, overlay, corner handles, rotation, remove button, and 5-second auto-hide |
 | 3 | Set handle auto-hide timer to 10 seconds | Too long — felt sluggish | Reduced to 5 seconds |
+| 4 | After completing the revert, immediately attempted to fetch 8 new Figma nodes the user had shared mid-session | User cancelled the tool call — they had not yet confirmed readiness to move to the next task | Stopped and waited for user direction |
 
 ---
 
