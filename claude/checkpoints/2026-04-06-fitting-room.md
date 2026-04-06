@@ -1,50 +1,56 @@
----
-date: 2026-04-06
-title: Fitting Room – Initial Implementation
+# Checkpoint 02 — Fitting Room Screen
+**Date:** 2026-04-06
+**Branch:** main
+
 ---
 
 ## Context
+Full "SAY YES to the dress" Fitting Room screen implemented from Figma (file `fTcwDkIUW4nyXE57DU8HQI`, node `10:318`). React + Vite project, plain CSS, no Tailwind. The canvas is a fixed 1920×1080 surface that scales to fit any viewport via `transform: scale()`.
 
-Built the full "Fitting Room" / "SAY YES to the dress" character screen from a Figma design file (fTcwDkIUW4nyXE57DU8HQI, node 10:318). The project is a React + Vite app with plain CSS (no Tailwind). The canvas is a fixed 1920×1080 design surface that scales to fit the viewport via a CSS transform.
+**Repo state:**
+- `src/App.jsx` — renders `<FittingRoom />` directly
+- `src/components/FittingRoom.jsx` — full screen component with drag-and-drop try-on logic
+- `src/components/FittingRoom.css` — all layout, positioning, and interaction styles
+- `src/assets/` — 15 images: `dress1–5.png`, `podium.png`, `body.png`, `wheel.svg`, `icon-hair/makeup/jewelry/dress/shoes/bouquet/accessory.png`
 
-## What Was Built
+**What's on screen:**
+- Gradient background (light gray → warm cream)
+- "SAY YES to the dress" title centered above the body (70px + 50px, KyivType Sans)
+- Podium, body silhouette, decorative wheel ring in the center stage
+- 7 accessory icon buttons arranged around the wheel — toggle active state on click (gold ring)
+- "Say, yes!" rounded CTA button at bottom center
+- Right panel (273px wide): 2-column dress grid (5 dresses, row 3 full-width), scrollable, "+" button adds local image
 
-### Core screen (`src/components/FittingRoom.jsx` + `FittingRoom.css`)
-- Gradient background, "SAY YES to the dress" title, podium, body silhouette, decorative wheel
-- 7 accessory icon buttons arranged around the wheel (Hair, Dress, Shoes, Accessory, Bouquet, Jewelry, Makeup) — toggle active state on click
-- "Say, yes!" CTA button at bottom center
-- Right panel with a 2-column dress grid (5 dresses, third is full-width), scrollbar, and a "+" add button
+**Drag-and-drop try-on:**
+- Drag dress thumbnail → ghost follows cursor at 75% opacity
+- Drop on stage → dress placed as floating overlay centered on drop point (200×420px default)
+- Drag to reposition; 4 corner handles to resize (opposite corner fixed); gold circle handle to rotate; × to remove
+- Handles fade out after **5 seconds** of inactivity; any interaction (click, drag, resize, rotate) resets the timer
 
-### Assets (`src/assets/`)
-- 15 images downloaded from Figma MCP asset URLs: 5 dresses, podium, body silhouette, wheel (SVG), and 7 accessory icons
+---
 
-### Drag-and-drop try-on
-- Drag a dress thumbnail from the right panel → semi-transparent ghost follows the cursor
-- Drop onto the central stage → dress placed on body as a floating overlay
-- Reposition by dragging the dress
-- Resize via 4 corner handles (opposite corner stays fixed)
-- Rotate via a gold circle handle above the dress
-- Remove via × button (top-right of dress)
-- **Handles auto-hide after 5 seconds** of inactivity (fade transition); reappear on click/interaction
+## Directions
+1. Clone repo, run `npm install`
+2. All assets are already in `src/assets/` — no download needed
+3. Run `npm run dev` — app runs at `http://localhost:5173/CharacterSelectionScreen/`
+4. Figma source: `https://www.figma.com/design/fTcwDkIUW4nyXE57DU8HQI/AI-Projects-Design-File?node-id=10-318`
+5. To update from Figma: use `get_design_context` with fileKey `fTcwDkIUW4nyXE57DU8HQI` and re-download assets from new MCP asset URLs
 
-### Design iterations applied
-1. Initial implementation from Figma (node 10:318) — "Fitting Room" title, left-aligned layout
-2. Figma update applied — title changed to "SAY YES to the dress", elements repositioned/scaled, "Say, yes!" button added, right panel narrowed (384px → 273px)
-3. Drag-to-adjust interaction added
-4. Auto-hide handles (10s → reduced to 5s on user request)
+---
 
-## Directions for Next Session
+## Records of Resistance
 
-- The 8 Figma nodes (30:287, 30:289, 30:290, 30:292, 30:293, 30:294, 30:291, 30:296) were shared by the user but **not yet implemented** — these are the next priority
-- Consider whether the drag drop UX needs further polish once those screens are reviewed
+| # | What AI Produced | Why It Was Rejected | What Was Done Instead |
+|---|---|---|---|
+| 1 | Attempted to download assets to `/Users/brunastefani/My project/Assets/` (Unity project) | Wrong project — Unity, not the web app | User corrected path to `/Users/brunastefani/Documents/GitHub/CharacterSelectionScreen` |
+| 2 | Implemented "click dress → replaces body silhouette" interaction | User wanted to go back to drag-and-drop with adjustable overlay | Fully reverted to drag-and-drop with resize/rotate/remove handles |
+| 3 | Set handle auto-hide timer to 10 seconds | Too long — felt sluggish | Reduced to 5 seconds |
 
-## Resistances
-
-- Initial wrong project path used (`/Users/brunastefani/My project` — a Unity project); corrected to `/Users/brunastefani/Documents/GitHub/CharacterSelectionScreen`
-- User tried "replace body with dress on click" approach but reverted to drag-and-drop after seeing it
+---
 
 ## Successes
 
-- Figma MCP workflow (get_design_context → download assets → adapt to project stack) worked cleanly
-- Viewport scaling via `transform: scale()` keeps all pixel-precise Figma coordinates intact at any window size
-- 5-second handle auto-hide with fade feels polished and non-intrusive
+- **Figma MCP → plain CSS workflow:** `get_design_context` returns React + Tailwind; converting pixel values directly to absolute CSS positions with a scaled canvas worked cleanly without installing any extra dependencies
+- **Viewport scaling via `transform: scale()`:** All Figma pixel coordinates used as-is — no conversion math needed, scales perfectly to any window size
+- **`useRef` for drag state instead of `useState`:** Using a ref for `adjustDrag` avoids stale closure issues in global `mousemove` / `mouseup` listeners while keeping renders minimal
+- **Handles auto-hide with `pointer-events: none`:** Wrapping all handles in `.fr-controls` and toggling `pointer-events` alongside opacity means the dress remains draggable even when handles are invisible
