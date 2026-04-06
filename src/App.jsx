@@ -1,11 +1,5 @@
-import './App.css'
+import FittingRoom from './components/FittingRoom'
 
-function App() {
-  return (
-    <div className="app">
-      <h1>Character Selection Screen</h1>
-    </div>
-  )
+export default function App() {
+  return <FittingRoom />
 }
-
-export default App
