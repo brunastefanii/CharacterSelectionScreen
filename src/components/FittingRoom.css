@@ -123,20 +123,6 @@
 }
 
 /* ─────────────────────────────────────────────
-   Stage dress preview — shown on podium when a
-   dress is selected from the panel
-   ───────────────────────────────────────────── */
-.fr-stage-dress {
-  position: absolute;
-  left: 870.27px;
-  top: 315.24px;
-  pointer-events: none;
-  z-index: 4;
-  object-fit: contain;
-  display: block;
-}
-
-/* ─────────────────────────────────────────────
    Drag ghost – fixed to viewport, follows cursor
    ───────────────────────────────────────────── */
 .fr-ghost {
@@ -385,10 +371,6 @@
 
 .fr-item-card--wide {
   grid-column: 1 / -1;
-}
-
-.fr-item-card--selected {
-  box-shadow: inset 0 0 0 2px #c8a97e;
 }
 
 .fr-item-card img {
