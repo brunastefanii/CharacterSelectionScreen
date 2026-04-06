@@ -1,4 +1,4 @@
-# Checkpoint 02 — Fitting Room Screen
+# Checkpoint 03 — Fitting Room Screen (Hair Panel)
 **Date:** 2026-04-06
 **Branch:** main
 
@@ -9,9 +9,9 @@ Full "SAY YES to the dress" Fitting Room screen implemented from Figma (file `fT
 
 **Repo state:**
 - `src/App.jsx` — renders `<FittingRoom />` directly
-- `src/components/FittingRoom.jsx` — full screen component with drag-and-drop try-on logic
+- `src/components/FittingRoom.jsx` — full screen component with drag-and-drop try-on logic and shared panel architecture
 - `src/components/FittingRoom.css` — all layout, positioning, and interaction styles
-- `src/assets/` — 15 images: `dress1–5.png`, `podium.png`, `body.png`, `wheel.svg`, `icon-hair/makeup/jewelry/dress/shoes/bouquet/accessory.png`
+- `src/assets/` — 27 files: `dress1–8.png`, `hair1–8.png`, `podium.png`, `body.png`, `wheel.svg`, `icon-hair/makeup/jewelry/dress/shoes/bouquet/accessory.png`
 
 **What's on screen:**
 - Gradient background (light gray → warm cream)
@@ -19,13 +19,22 @@ Full "SAY YES to the dress" Fitting Room screen implemented from Figma (file `fT
 - Podium, body silhouette, decorative wheel ring in the center stage
 - 7 accessory icon buttons arranged around the wheel — toggle active state on click (gold ring)
 - "Say, yes!" rounded CTA button at bottom center
-- Right panel (273px wide): 2-column dress grid (5 dresses, row 3 full-width), scrollable, "+" button adds local image
+- Right panel (273px wide): shared panel for dress and hair — slides in when the respective icon is clicked
+  - Dress panel: 2-column scrollable grid, 8 dresses (row 3 full-width), drag-to-try-on
+  - Hair panel: 2-column scrollable grid, 8 hair options (Figma nodes 37:96–37:103)
+  - "+" button in footer (adds local image when dress panel is active)
 
 **Drag-and-drop try-on:**
 - Drag dress thumbnail → ghost follows cursor at 75% opacity
 - Drop on stage → dress placed as floating overlay centered on drop point (200×420px default)
 - Drag to reposition; 4 corner handles to resize (opposite corner fixed); gold circle handle to rotate; × to remove
 - Handles fade out after **5 seconds** of inactivity; any interaction (click, drag, resize, rotate) resets the timer
+
+**Shared panel architecture:**
+- `PANEL_ICONS = ['dress', 'hair']` controls which icon IDs open the panel
+- Panel visibility: `PANEL_ICONS.includes(activeIcon)` drives CSS `fr-panel--visible` class
+- Content: `activeIcon === 'dress'` / `activeIcon === 'hair'` conditionally renders the correct grid
+- Grid/card classes unified: `.fr-item-grid`, `.fr-item-card`, `.fr-item-card--wide`
 
 ---
 
@@ -56,3 +65,4 @@ Full "SAY YES to the dress" Fitting Room screen implemented from Figma (file `fT
 - **Viewport scaling via `transform: scale()`:** All Figma pixel coordinates used as-is — no conversion math needed, scales perfectly to any window size
 - **`useRef` for drag state instead of `useState`:** Using a ref for `adjustDrag` avoids stale closure issues in global `mousemove` / `mouseup` listeners while keeping renders minimal
 - **Handles auto-hide with `pointer-events: none`:** Wrapping all handles in `.fr-controls` and toggling `pointer-events` alongside opacity means the dress remains draggable even when handles are invisible
+- **Shared panel with `PANEL_ICONS` array:** Extending the panel to serve multiple categories (dress, hair) required no structural change — just adding `'hair'` to `PANEL_ICONS` and a conditional render block. Clean, scalable pattern for all remaining icon categories.
