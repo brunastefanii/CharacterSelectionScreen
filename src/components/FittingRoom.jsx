@@ -6,6 +6,9 @@ import dress2 from '../assets/dress2.png'
 import dress3 from '../assets/dress3.png'
 import dress4 from '../assets/dress4.png'
 import dress5 from '../assets/dress5.png'
+import dress6 from '../assets/dressed-5.png'
+import dress7 from '../assets/dressed-6.png'
+import dress8 from '../assets/dressed-8.png'
 import podium from '../assets/podium.png'
 import body from '../assets/body.png'
 import wheel from '../assets/wheel.svg'
@@ -38,6 +41,9 @@ const INITIAL_DRESSES = [
   { id: 3, src: dress3 },
   { id: 4, src: dress4 },
   { id: 5, src: dress5 },
+  { id: 6, src: dress6 },
+  { id: 7, src: dress7 },
+  { id: 8, src: dress8 },
 ]
 
 export default function FittingRoom() {

@@ -329,7 +329,7 @@
   padding: 8.5px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 200.137px 200.137px 200.137px;
+  grid-auto-rows: 200.137px;
   gap: 8.5px;
   scrollbar-width: thin;
   scrollbar-color: #959595 #bbb;
