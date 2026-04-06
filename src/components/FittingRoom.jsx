@@ -43,6 +43,13 @@ const ACCESSORY_ICONS = [
   { id: 'makeup',    label: 'Makeup',    icon: iconMakeup,    left: 744.21,  top: 382.91 },
 ]
 
+// Default drop size per category
+const ITEM_DEFAULTS = {
+  dress: { width: 200, height: 420 },
+  hair:  { width: 150, height: 200 },
+}
+const FALLBACK_DEFAULTS = { width: 150, height: 200 }
+
 const INITIAL_DRESSES = [
   { id: 1, src: dress1 },
   { id: 2, src: dress2 },
@@ -74,23 +81,23 @@ export default function FittingRoom() {
   const [activeIcon, setActiveIcon] = useState(null)
   const [dresses, setDresses] = useState(INITIAL_DRESSES)
 
-  // Ghost drag from panel: { src, ghostX, ghostY }
+  // Ghost drag from panel: { src, ghostX, ghostY, category }
   const [panelDrag, setPanelDrag] = useState(null)
 
-  // Placed dress on stage: { src, x, y, width, height, rotation }
-  const [placedDress, setPlacedDress] = useState(null)
+  // Placed items per category: { [category]: { src, x, y, width, height, rotation } }
+  const [placedItems, setPlacedItems] = useState({})
 
   // Active adjustment gesture
   const adjustDrag = useRef(null)
 
-  // Handles visibility with 5-second auto-hide
-  const [showHandles, setShowHandles] = useState(false)
+  // Which category's handles are currently visible (auto-hides after 5 s)
+  const [showHandlesFor, setShowHandlesFor] = useState(null)
   const handlesTimer = useRef(null)
 
-  function revealHandles() {
-    setShowHandles(true)
+  function revealHandles(category) {
+    setShowHandlesFor(category)
     clearTimeout(handlesTimer.current)
-    handlesTimer.current = setTimeout(() => setShowHandles(false), 5000)
+    handlesTimer.current = setTimeout(() => setShowHandlesFor(null), 5000)
   }
 
   // ── Viewport scaling ──────────────────────────────────────────────────────
@@ -129,23 +136,25 @@ export default function FittingRoom() {
 
       const dx = (e.clientX - adj.startClientX) / scale
       const dy = (e.clientY - adj.startClientY) / scale
+      const cat = adj.category
 
       if (adj.type === 'move') {
-        setPlacedDress(prev => prev && ({
-          ...prev,
-          x: adj.origX + dx,
-          y: adj.origY + dy,
-        }))
+        setPlacedItems(prev => {
+          const item = prev[cat]
+          if (!item) return prev
+          return { ...prev, [cat]: { ...item, x: adj.origX + dx, y: adj.origY + dy } }
+        })
       } else if (adj.type === 'rotate') {
         const rect = canvasRef.current?.getBoundingClientRect()
         if (!rect) return
         const cx = adj.pivotX * scale + rect.left
         const cy = adj.pivotY * scale + rect.top
         const angle = Math.atan2(e.clientY - cy, e.clientX - cx) * (180 / Math.PI)
-        setPlacedDress(prev => prev && ({
-          ...prev,
-          rotation: adj.origRot + (angle - adj.startAngle),
-        }))
+        setPlacedItems(prev => {
+          const item = prev[cat]
+          if (!item) return prev
+          return { ...prev, [cat]: { ...item, rotation: adj.origRot + (angle - adj.startAngle) } }
+        })
       } else {
         // Corner resize — opposite corner stays fixed
         const { corner, origX, origY, origW, origH } = adj
@@ -161,13 +170,11 @@ export default function FittingRoom() {
         const newW = Math.max(60, Math.abs(dragX - fixedX))
         const newH = Math.max(80, Math.abs(dragY - fixedY))
 
-        setPlacedDress(prev => prev && ({
-          ...prev,
-          x: (fixedX + dragX) / 2,
-          y: (fixedY + dragY) / 2,
-          width: newW,
-          height: newH,
-        }))
+        setPlacedItems(prev => {
+          const item = prev[cat]
+          if (!item) return prev
+          return { ...prev, [cat]: { ...item, x: (fixedX + dragX) / 2, y: (fixedY + dragY) / 2, width: newW, height: newH } }
+        })
       }
     }
 
@@ -179,15 +186,13 @@ export default function FittingRoom() {
           pt.y >= DROP_ZONE.top  && pt.y <= DROP_ZONE.bottom
 
         if (inZone) {
-          setPlacedDress({
-            src: panelDrag.src,
-            x: pt.x,
-            y: pt.y,
-            width: 200,
-            height: 420,
-            rotation: 0,
-          })
-          revealHandles()
+          const cat = panelDrag.category
+          const defaults = ITEM_DEFAULTS[cat] ?? FALLBACK_DEFAULTS
+          setPlacedItems(prev => ({
+            ...prev,
+            [cat]: { src: panelDrag.src, x: pt.x, y: pt.y, ...defaults, rotation: 0 },
+          }))
+          revealHandles(cat)
         }
         setPanelDrag(null)
         return
@@ -204,43 +209,54 @@ export default function FittingRoom() {
   }, [panelDrag, scale, toCanvas])
 
   // ── Gesture starters ──────────────────────────────────────────────────────
-  function startMove(e) {
+  function startMove(e, category) {
     e.stopPropagation()
-    if (!placedDress) return
-    revealHandles()
+    const item = placedItems[category]
+    if (!item) return
+    revealHandles(category)
     adjustDrag.current = {
-      type: 'move',
+      type: 'move', category,
       startClientX: e.clientX, startClientY: e.clientY,
-      origX: placedDress.x, origY: placedDress.y,
+      origX: item.x, origY: item.y,
     }
   }
 
-  function startResize(e, corner) {
+  function startResize(e, corner, category) {
     e.stopPropagation()
-    if (!placedDress) return
-    revealHandles()
+    const item = placedItems[category]
+    if (!item) return
+    revealHandles(category)
     adjustDrag.current = {
-      type: corner,
+      type: corner, category,
       startClientX: e.clientX, startClientY: e.clientY,
-      origX: placedDress.x, origY: placedDress.y,
-      origW: placedDress.width, origH: placedDress.height,
+      origX: item.x, origY: item.y,
+      origW: item.width, origH: item.height,
     }
   }
 
-  function startRotate(e) {
+  function startRotate(e, category) {
     e.stopPropagation()
-    if (!placedDress) return
-    revealHandles()
+    const item = placedItems[category]
+    if (!item) return
+    revealHandles(category)
     const rect = canvasRef.current?.getBoundingClientRect()
-    const cx = placedDress.x * scale + (rect?.left ?? 0)
-    const cy = placedDress.y * scale + (rect?.top  ?? 0)
+    const cx = item.x * scale + (rect?.left ?? 0)
+    const cy = item.y * scale + (rect?.top  ?? 0)
     adjustDrag.current = {
-      type: 'rotate',
+      type: 'rotate', category,
       startClientX: e.clientX, startClientY: e.clientY,
-      origRot: placedDress.rotation,
+      origRot: item.rotation,
       startAngle: Math.atan2(e.clientY - cy, e.clientX - cx) * (180 / Math.PI),
-      pivotX: placedDress.x, pivotY: placedDress.y,
+      pivotX: item.x, pivotY: item.y,
     }
+  }
+
+  function removeItem(category) {
+    setPlacedItems(prev => {
+      const next = { ...prev }
+      delete next[category]
+      return next
+    })
   }
 
   // ── Add dress from file ───────────────────────────────────────────────────
@@ -287,35 +303,36 @@ export default function FittingRoom() {
           <img src={body} alt="character" draggable={false} />
         </div>
 
-        {/* Placed dress overlay */}
-        {placedDress && (
+        {/* Placed items — one per category */}
+        {Object.entries(placedItems).map(([category, item]) => (
           <div
+            key={category}
             className="fr-placed"
             style={{
-              left: placedDress.x - placedDress.width / 2,
-              top: placedDress.y - placedDress.height / 2,
-              width: placedDress.width,
-              height: placedDress.height,
-              transform: `rotate(${placedDress.rotation}deg)`,
+              left: item.x - item.width / 2,
+              top:  item.y - item.height / 2,
+              width: item.width,
+              height: item.height,
+              transform: `rotate(${item.rotation}deg)`,
             }}
-            onMouseDown={startMove}
+            onMouseDown={e => startMove(e, category)}
           >
-            <img src={placedDress.src} alt="placed dress" draggable={false} />
+            <img src={item.src} alt={`placed ${category}`} draggable={false} />
 
-            <div className={`fr-controls ${showHandles ? 'fr-controls--visible' : ''}`}>
-              <div className="fr-rot-handle" onMouseDown={startRotate} title="Rotate" />
-              <div className="fr-handle fr-handle--tl" onMouseDown={e => startResize(e, 'tl')} />
-              <div className="fr-handle fr-handle--tr" onMouseDown={e => startResize(e, 'tr')} />
-              <div className="fr-handle fr-handle--bl" onMouseDown={e => startResize(e, 'bl')} />
-              <div className="fr-handle fr-handle--br" onMouseDown={e => startResize(e, 'br')} />
+            <div className={`fr-controls ${showHandlesFor === category ? 'fr-controls--visible' : ''}`}>
+              <div className="fr-rot-handle" onMouseDown={e => startRotate(e, category)} title="Rotate" />
+              <div className="fr-handle fr-handle--tl" onMouseDown={e => startResize(e, 'tl', category)} />
+              <div className="fr-handle fr-handle--tr" onMouseDown={e => startResize(e, 'tr', category)} />
+              <div className="fr-handle fr-handle--bl" onMouseDown={e => startResize(e, 'bl', category)} />
+              <div className="fr-handle fr-handle--br" onMouseDown={e => startResize(e, 'br', category)} />
               <button
                 className="fr-remove-btn"
-                onClick={e => { e.stopPropagation(); setPlacedDress(null) }}
+                onClick={e => { e.stopPropagation(); removeItem(category) }}
                 title="Remove"
               >×</button>
             </div>
           </div>
-        )}
+        ))}
 
         {/* Accessory icon buttons */}
         {ACCESSORY_ICONS.map(({ id, label, icon, left, top }) => (
@@ -345,7 +362,7 @@ export default function FittingRoom() {
                   className={`fr-item-card ${i === 2 ? 'fr-item-card--wide' : ''}`}
                   onMouseDown={e => {
                     e.preventDefault()
-                    setPanelDrag({ src: dress.src, ghostX: e.clientX, ghostY: e.clientY })
+                    setPanelDrag({ src: dress.src, ghostX: e.clientX, ghostY: e.clientY, category: 'dress' })
                   }}
                   title="Drag to body to try on"
                 >
@@ -365,7 +382,7 @@ export default function FittingRoom() {
                   title="Drag to body to try on"
                   onMouseDown={e => {
                     e.preventDefault()
-                    setPanelDrag({ src: h.src, ghostX: e.clientX, ghostY: e.clientY })
+                    setPanelDrag({ src: h.src, ghostX: e.clientX, ghostY: e.clientY, category: 'hair' })
                   }}
                 >
                   <img src={h.src} alt={`Hair ${h.id}`} draggable={false} />
