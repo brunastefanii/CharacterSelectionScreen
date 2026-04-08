@@ -439,12 +439,14 @@ export default function FittingRoom() {
             </div>
           )}
 
-          <div className="fr-panel-footer">
-            <button className="fr-add-btn" onClick={handleAddItem} title="Upload image">
-              <span className="fr-plus-h" />
-              <span className="fr-plus-v" />
-            </button>
-          </div>
+        </div>
+
+        {/* + button footer — separate element below the panel */}
+        <div className={`fr-panel-footer ${PANEL_ICONS.includes(activeIcon) ? 'fr-panel-footer--visible' : ''}`}>
+          <button className="fr-add-btn" onClick={handleAddItem} title="Upload image">
+            <span className="fr-plus-h" />
+            <span className="fr-plus-v" />
+          </button>
         </div>
       </div>
 
