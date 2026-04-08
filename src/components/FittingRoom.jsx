@@ -507,6 +507,14 @@ export default function FittingRoom() {
           >SAY YES!</button>
         )}
 
+        {/* Congratulations message — appears after confetti finishes */}
+        {saidYes && !showConfetti && (
+          <div className="fr-congrats">
+            <p className="fr-congrats-text">Congratulations!</p>
+            <p className="fr-congrats-sub">You said YES, to the dress!</p>
+          </div>
+        )}
+
         {/* Right panel — visible when dress or hair icon is active */}
         <div className={`fr-panel ${PANEL_ICONS.includes(activeIcon) && !saidYes ? 'fr-panel--visible' : ''}`}>
 

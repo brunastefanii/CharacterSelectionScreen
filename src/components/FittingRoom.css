@@ -204,6 +204,39 @@
 }
 
 /* ─────────────────────────────────────────────
+   Congratulations message
+   ───────────────────────────────────────────── */
+.fr-congrats {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 10;
+  animation: fr-fade-in 0.8s ease forwards;
+  pointer-events: none;
+}
+
+.fr-congrats-text {
+  font-family: 'KyivType Sans', 'Georgia', serif;
+  font-size: 72px;
+  font-weight: 400;
+  color: #C8A97E;
+  margin: 0;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.fr-congrats-sub {
+  font-family: 'KyivType Sans', 'Georgia', serif;
+  font-size: 40px;
+  font-weight: 400;
+  color: #000;
+  margin: 16px 0 0;
+  white-space: nowrap;
+}
+
+/* ─────────────────────────────────────────────
    Confetti canvas
    ───────────────────────────────────────────── */
 .fr-confetti {
