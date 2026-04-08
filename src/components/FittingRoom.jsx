@@ -38,6 +38,17 @@ const DESIGN_HEIGHT = 1080
 
 const DROP_ZONE = { left: 668, top: 202, right: 1464, bottom: 1000 }
 
+const BODY_SWATCHES = [
+  { label: 'Original', value: null },
+  { label: 'Light',    value: '#fde8d5' },
+  { label: 'Warm',     value: '#f5cba7' },
+  { label: 'Tan',      value: '#d4956a' },
+  { label: 'Bronze',   value: '#b5622f' },
+  { label: 'Deep',     value: '#7b3f1e' },
+  { label: 'Ivory',    value: '#f9f0e6' },
+  { label: 'Rose',     value: '#f4c2c2' },
+]
+
 const ACCESSORY_ICONS = [
   { id: 'hair',    label: 'Hair',    icon: iconHair,    left: 792.94,  top: 240.57 },
   { id: 'dress',   label: 'Dress',   icon: iconDress,   left: 953.03,  top: 175.19 },
@@ -100,6 +111,41 @@ export default function FittingRoom() {
   const audioRef = useRef(null)
   const audioTimerRef = useRef(null)
 
+  // Body color tint
+  const [bodyColor, setBodyColor] = useState(null)
+  const [showBodyPicker, setShowBodyPicker] = useState(false)
+  const bodyCanvasRef = useRef(null)
+  const bodyImgRef = useRef(null)
+  const bodyCustomRef = useRef(null)
+
+  // Redraw body canvas whenever bodyColor changes.
+  // source-in composite fills only the opaque pixels of the silhouette.
+  useEffect(() => {
+    const canvas = bodyCanvasRef.current
+    if (!canvas) return
+
+    function draw(img) {
+      canvas.width = img.naturalWidth
+      canvas.height = img.naturalHeight
+      const ctx = canvas.getContext('2d')
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      ctx.drawImage(img, 0, 0)
+      if (bodyColor) {
+        ctx.globalCompositeOperation = 'source-in'
+        ctx.fillStyle = bodyColor
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
+      }
+    }
+
+    if (bodyImgRef.current) {
+      draw(bodyImgRef.current)
+    } else {
+      const img = new Image()
+      img.onload = () => { bodyImgRef.current = img; draw(img) }
+      img.src = body
+    }
+  }, [bodyColor])
+
   // Face camera
   const [faceSrc, setFaceSrc] = useState(null)
   const [showCamera, setShowCamera] = useState(false)
@@ -129,15 +175,28 @@ export default function FittingRoom() {
     }
   }, [showCamera])
 
+  // Face input center position on the canvas
+  const FACE_CENTER_X = 959.5 + 53.501 / 2   // 986.25
+  const FACE_CENTER_Y = 315.15 + 80.846 / 2  // 355.57
+
   function capturePhoto() {
     const video = videoRef.current
     if (!video) return
-    const canvas = document.createElement('canvas')
-    canvas.width = video.videoWidth
-    canvas.height = video.videoHeight
-    const ctx = canvas.getContext('2d')
+    const cvs = document.createElement('canvas')
+    cvs.width = video.videoWidth
+    cvs.height = video.videoHeight
+    const ctx = cvs.getContext('2d')
+    // Mirror the image to match what the user saw in the preview
+    ctx.translate(cvs.width, 0)
+    ctx.scale(-1, 1)
     ctx.drawImage(video, 0, 0)
-    setFaceSrc(canvas.toDataURL('image/png'))
+    const src = cvs.toDataURL('image/png')
+    setFaceSrc(src)
+    setPlacedItems(prev => ({
+      ...prev,
+      face: { src, x: FACE_CENTER_X, y: FACE_CENTER_Y, width: 53.501, height: 80.846, rotation: 0 },
+    }))
+    revealHandles('face')
     closeCamera()
   }
 
@@ -456,6 +515,7 @@ export default function FittingRoom() {
         className="fr-canvas"
         ref={canvasRef}
         style={{ transform: `scale(${scale})`, transformOrigin: 'top left' }}
+        onClick={() => showBodyPicker && setShowBodyPicker(false)}
       >
         {/* Background */}
         <div className="fr-bg" />
@@ -491,26 +551,64 @@ export default function FittingRoom() {
           </div>
         )}
 
-        {/* Body silhouette */}
-        <div className="fr-body">
-          <img src={body} alt="character" draggable={false} />
+        {/* Body silhouette — click to change skin tone */}
+        <div
+          className="fr-body"
+          style={{ cursor: 'pointer', pointerEvents: 'auto' }}
+          onClick={() => setShowBodyPicker(p => !p)}
+          title="Click to change skin tone"
+        >
+          <canvas ref={bodyCanvasRef} />
         </div>
 
-        {/* Face input — click to capture */}
-        <div className="fr-face-input" onClick={openCamera} title="Click to take a photo">
-          <img
-            src={faceSrc ?? faceInput}
-            alt="face"
-            draggable={false}
-            className={faceSrc ? 'fr-face-captured' : ''}
-          />
-        </div>
+        {/* Skin tone color picker */}
+        {showBodyPicker && (
+          <div className="fr-body-picker" onClick={e => e.stopPropagation()}>
+            <p className="fr-body-picker-label">Skin tone</p>
+            <div className="fr-body-picker-swatches">
+              {BODY_SWATCHES.map(s => (
+                <button
+                  key={s.label}
+                  className={`fr-body-swatch${bodyColor === s.value ? ' fr-body-swatch--active' : ''}`}
+                  style={s.value ? { background: s.value } : {}}
+                  title={s.label}
+                  onClick={e => {
+                    e.stopPropagation()
+                    setBodyColor(s.value)
+                    setShowBodyPicker(false)
+                  }}
+                >
+                  {!s.value && '↺'}
+                </button>
+              ))}
+              <button
+                className="fr-body-swatch fr-body-swatch--custom"
+                title="Custom color"
+                onClick={e => { e.stopPropagation(); bodyCustomRef.current?.click() }}
+              >+</button>
+            </div>
+            <input
+              ref={bodyCustomRef}
+              type="color"
+              className="fr-body-color-input"
+              value={bodyColor ?? '#f5cba7'}
+              onChange={e => { setBodyColor(e.target.value) }}
+            />
+          </div>
+        )}
+
+        {/* Face input — click to capture (hidden once photo is placed) */}
+        {!placedItems.face && (
+          <div className="fr-face-input" onClick={openCamera} title="Click to take a photo">
+            <img src={faceInput} alt="face" draggable={false} />
+          </div>
+        )}
 
         {/* Placed items — one per category */}
         {Object.entries(placedItems).map(([category, item]) => (
           <div
             key={category}
-            className="fr-placed"
+            className={`fr-placed${category === 'face' ? ' fr-placed--face' : ''}`}
             style={{
               left: item.x - item.width / 2,
               top:  item.y - item.height / 2,
@@ -530,7 +628,11 @@ export default function FittingRoom() {
               <div className="fr-handle fr-handle--br" onMouseDown={e => startResize(e, 'br', category)} />
               <button
                 className="fr-remove-btn"
-                onClick={e => { e.stopPropagation(); removeItem(category) }}
+                onClick={e => {
+                  e.stopPropagation()
+                  removeItem(category)
+                  if (category === 'face') setFaceSrc(null)
+                }}
                 title="Remove"
               >×</button>
             </div>
