@@ -163,9 +163,8 @@
   object-fit: cover;
 }
 
-.fr-placed--face {
+.fr-face-captured {
   border-radius: 50%;
-  overflow: hidden;
 }
 
 /* ─────────────────────────────────────────────
