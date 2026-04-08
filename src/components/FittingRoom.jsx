@@ -105,13 +105,13 @@ export default function FittingRoom() {
       audioRef.current = new Audio(weddingMarch)
       audioRef.current.volume = 0.7
     }
-    audioRef.current.currentTime = 0
+    audioRef.current.currentTime = 7
     audioRef.current.play()
     clearTimeout(audioTimerRef.current)
     audioTimerRef.current = setTimeout(() => {
       audioRef.current.pause()
-      audioRef.current.currentTime = 0
-    }, 20000)
+      audioRef.current.currentTime = 7
+    }, 13000)
   }
 
   // Confetti
