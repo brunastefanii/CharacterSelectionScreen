@@ -411,12 +411,6 @@
   background: #f5f5f5;
 }
 
-.fr-cta--fadeout {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.6s ease;
-}
-
 /* ─────────────────────────────────────────────
    Right panel
    ───────────────────────────────────────────── */
@@ -440,12 +434,6 @@
   opacity: 1;
   pointer-events: auto;
   transform: translateX(0);
-}
-
-.fr-panel--fadeout {
-  opacity: 0 !important;
-  pointer-events: none !important;
-  transition: opacity 0.6s ease !important;
 }
 
 /* ─────────────────────────────────────────────
