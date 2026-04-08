@@ -1,7 +1,7 @@
 # Say Yes to the Dress — Fitting Room
 
 **AI 201 · Project 1 · Bruna Stefani**
-**Live URL:** https://brunastefani.github.io/CharacterSelectionScreen/
+**Live URL:** https://brunastefanii.github.io/CharacterSelectionScreen/
 
 ---
 
