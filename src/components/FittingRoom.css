@@ -477,3 +477,34 @@
   top: 0;
   transform: translateX(-50%);
 }
+
+/* ─────────────────────────────────────────────
+   Uploaded item delete button (hover to reveal)
+   ───────────────────────────────────────────── */
+.fr-item-delete {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, background 0.15s;
+  z-index: 2;
+  user-select: none;
+}
+
+.fr-item-card:hover .fr-item-delete {
+  opacity: 1;
+}
+
+.fr-item-delete:hover {
+  background: #c0392b;
+}

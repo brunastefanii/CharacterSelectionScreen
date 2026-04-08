@@ -73,14 +73,24 @@ const HAIR_OPTIONS = [
   { id: 8, src: hair8 },
 ]
 
-const PANEL_ICONS = ['dress', 'hair']
+const PANEL_ICONS = ['dress', 'hair', 'shoes', 'makeup', 'bouquet', 'jewelry', 'accessory']
+
+const INITIAL_CATEGORY_ITEMS = {
+  dress:     INITIAL_DRESSES.map(d => ({ ...d })),
+  hair:      HAIR_OPTIONS.map(h => ({ ...h })),
+  shoes:     [],
+  makeup:    [],
+  bouquet:   [],
+  jewelry:   [],
+  accessory: [],
+}
 
 export default function FittingRoom() {
   const wrapperRef = useRef(null)
   const canvasRef = useRef(null)
   const [scale, setScale] = useState(1)
   const [activeIcon, setActiveIcon] = useState(null)
-  const [dresses, setDresses] = useState(INITIAL_DRESSES)
+  const [categoryItems, setCategoryItems] = useState(INITIAL_CATEGORY_ITEMS)
   const [isProcessing, setIsProcessing] = useState(false)
 
   // Ghost drag from panel: { src, ghostX, ghostY, category }
@@ -261,8 +271,10 @@ export default function FittingRoom() {
     })
   }
 
-  // ── Add dress from file with background removal ───────────────────────────
-  function handleAddDress() {
+  // ── Upload image for the active category ─────────────────────────────────
+  function handleAddItem() {
+    const category = activeIcon
+    if (!category) return
     const input = document.createElement('input')
     input.type = 'file'
     input.accept = 'image/*'
@@ -273,16 +285,28 @@ export default function FittingRoom() {
       try {
         const blob = await removeBackground(file)
         const url = URL.createObjectURL(blob)
-        setDresses(prev => [...prev, { id: Date.now(), src: url }])
+        setCategoryItems(prev => ({
+          ...prev,
+          [category]: [...prev[category], { id: Date.now(), src: url, isUploaded: true }],
+        }))
       } catch (err) {
         console.error('Background removal failed:', err)
-        // Fall back to original image if processing fails
-        setDresses(prev => [...prev, { id: Date.now(), src: URL.createObjectURL(file) }])
+        setCategoryItems(prev => ({
+          ...prev,
+          [category]: [...prev[category], { id: Date.now(), src: URL.createObjectURL(file), isUploaded: true }],
+        }))
       } finally {
         setIsProcessing(false)
       }
     }
     input.click()
+  }
+
+  function handleDeleteItem(category, id) {
+    setCategoryItems(prev => ({
+      ...prev,
+      [category]: prev[category].filter(item => item.id !== id),
+    }))
   }
 
   return (
@@ -377,46 +401,36 @@ export default function FittingRoom() {
         {/* Right panel — visible when dress or hair icon is active */}
         <div className={`fr-panel ${PANEL_ICONS.includes(activeIcon) ? 'fr-panel--visible' : ''}`}>
 
-          {/* Dress grid */}
-          {activeIcon === 'dress' && (
+          {/* Item grid — shared across all categories */}
+          {activeIcon && (
             <div className="fr-item-grid">
-              {dresses.map((dress, i) => (
+              {(categoryItems[activeIcon] ?? []).map((item, i) => (
                 <button
-                  key={dress.id}
-                  className={`fr-item-card ${i === 2 ? 'fr-item-card--wide' : ''}`}
+                  key={item.id}
+                  className={`fr-item-card ${activeIcon === 'dress' && i === 2 ? 'fr-item-card--wide' : ''}`}
                   onMouseDown={e => {
                     e.preventDefault()
-                    setPanelDrag({ src: dress.src, ghostX: e.clientX, ghostY: e.clientY, category: 'dress' })
+                    setPanelDrag({ src: item.src, ghostX: e.clientX, ghostY: e.clientY, category: activeIcon })
                   }}
                   title="Drag to body to try on"
                 >
-                  <img src={dress.src} alt={`Dress ${i + 1}`} draggable={false} />
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* Hair grid */}
-          {activeIcon === 'hair' && (
-            <div className="fr-item-grid">
-              {HAIR_OPTIONS.map((h) => (
-                <button
-                  key={h.id}
-                  className="fr-item-card"
-                  title="Drag to body to try on"
-                  onMouseDown={e => {
-                    e.preventDefault()
-                    setPanelDrag({ src: h.src, ghostX: e.clientX, ghostY: e.clientY, category: 'hair' })
-                  }}
-                >
-                  <img src={h.src} alt={`Hair ${h.id}`} draggable={false} />
+                  <img src={item.src} alt={`${activeIcon} ${i + 1}`} draggable={false} />
+                  {item.isUploaded && (
+                    <div
+                      role="button"
+                      className="fr-item-delete"
+                      onMouseDown={e => e.stopPropagation()}
+                      onClick={e => { e.stopPropagation(); handleDeleteItem(activeIcon, item.id) }}
+                      title="Remove"
+                    >×</div>
+                  )}
                 </button>
               ))}
             </div>
           )}
 
           <div className="fr-panel-footer">
-            <button className="fr-add-btn" onClick={handleAddDress} title="Upload your own dress">
+            <button className="fr-add-btn" onClick={handleAddItem} title="Upload image">
               <span className="fr-plus-h" />
               <span className="fr-plus-v" />
             </button>
