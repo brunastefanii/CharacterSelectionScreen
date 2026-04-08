@@ -100,6 +100,55 @@ export default function FittingRoom() {
   const audioRef = useRef(null)
   const audioTimerRef = useRef(null)
 
+  // Face camera
+  const [faceSrc, setFaceSrc] = useState(null)
+  const [showCamera, setShowCamera] = useState(false)
+  const videoRef = useRef(null)
+  const streamRef = useRef(null)
+
+  function openCamera() {
+    setShowCamera(true)
+  }
+
+  useEffect(() => {
+    if (!showCamera) return
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false })
+      .then(stream => {
+        streamRef.current = stream
+        if (videoRef.current) videoRef.current.srcObject = stream
+      })
+      .catch(err => {
+        console.error('Camera access denied:', err)
+        setShowCamera(false)
+      })
+    return () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(t => t.stop())
+        streamRef.current = null
+      }
+    }
+  }, [showCamera])
+
+  function capturePhoto() {
+    const video = videoRef.current
+    if (!video) return
+    const canvas = document.createElement('canvas')
+    canvas.width = video.videoWidth
+    canvas.height = video.videoHeight
+    const ctx = canvas.getContext('2d')
+    ctx.drawImage(video, 0, 0)
+    setFaceSrc(canvas.toDataURL('image/png'))
+    closeCamera()
+  }
+
+  function closeCamera() {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(t => t.stop())
+      streamRef.current = null
+    }
+    setShowCamera(false)
+  }
+
   function playWeddingMarch() {
     if (!audioRef.current) {
       audioRef.current = new Audio(weddingMarch)
@@ -447,9 +496,14 @@ export default function FittingRoom() {
           <img src={body} alt="character" draggable={false} />
         </div>
 
-        {/* Face input placeholder */}
-        <div className="fr-face-input">
-          <img src={faceInput} alt="" draggable={false} />
+        {/* Face input — click to capture */}
+        <div className="fr-face-input" onClick={openCamera} title="Click to take a photo">
+          <img
+            src={faceSrc ?? faceInput}
+            alt="face"
+            draggable={false}
+            className={faceSrc ? 'fr-face-captured' : ''}
+          />
         </div>
 
         {/* Placed items — one per category */}
@@ -552,6 +606,25 @@ export default function FittingRoom() {
           </div>
         </div>
       </div>
+
+      {/* Camera modal — fixed to viewport */}
+      {showCamera && (
+        <div className="fr-camera-overlay">
+          <div className="fr-camera-modal">
+            <video
+              ref={videoRef}
+              className="fr-camera-video"
+              autoPlay
+              playsInline
+              muted
+            />
+            <div className="fr-camera-actions">
+              <button className="fr-camera-capture" onClick={capturePhoto} title="Take photo" />
+              <button className="fr-camera-cancel" onClick={closeCamera}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Confetti — fixed to viewport */}
       {showConfetti && (
