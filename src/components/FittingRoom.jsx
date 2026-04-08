@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { removeBackground } from '@imgly/background-removal'
 import './FittingRoom.css'
 
 import dress1 from '../assets/dress1.png'
@@ -80,6 +81,7 @@ export default function FittingRoom() {
   const [scale, setScale] = useState(1)
   const [activeIcon, setActiveIcon] = useState(null)
   const [dresses, setDresses] = useState(INITIAL_DRESSES)
+  const [isProcessing, setIsProcessing] = useState(false)
 
   // Ghost drag from panel: { src, ghostX, ghostY, category }
   const [panelDrag, setPanelDrag] = useState(null)
@@ -259,15 +261,26 @@ export default function FittingRoom() {
     })
   }
 
-  // ── Add dress from file ───────────────────────────────────────────────────
+  // ── Add dress from file with background removal ───────────────────────────
   function handleAddDress() {
     const input = document.createElement('input')
     input.type = 'file'
     input.accept = 'image/*'
-    input.onchange = (e) => {
+    input.onchange = async (e) => {
       const file = e.target.files[0]
       if (!file) return
-      setDresses(prev => [...prev, { id: Date.now(), src: URL.createObjectURL(file) }])
+      setIsProcessing(true)
+      try {
+        const blob = await removeBackground(file)
+        const url = URL.createObjectURL(blob)
+        setDresses(prev => [...prev, { id: Date.now(), src: url }])
+      } catch (err) {
+        console.error('Background removal failed:', err)
+        // Fall back to original image if processing fails
+        setDresses(prev => [...prev, { id: Date.now(), src: URL.createObjectURL(file) }])
+      } finally {
+        setIsProcessing(false)
+      }
     }
     input.click()
   }
@@ -297,6 +310,17 @@ export default function FittingRoom() {
         <div className="fr-wheel">
           <img src={wheel} alt="" draggable={false} />
         </div>
+
+        {/* Processing overlay */}
+        {isProcessing && (
+          <div className="fr-processing">
+            <div className="fr-processing-card">
+              <div className="fr-processing-spinner" />
+              <p className="fr-processing-label">Removing background…</p>
+              <p className="fr-processing-sub">Your dress will be ready in a moment</p>
+            </div>
+          </div>
+        )}
 
         {/* Body silhouette */}
         <div className="fr-body">
@@ -392,7 +416,7 @@ export default function FittingRoom() {
           )}
 
           <div className="fr-panel-footer">
-            <button className="fr-add-btn">
+            <button className="fr-add-btn" onClick={handleAddDress} title="Upload your own dress">
               <span className="fr-plus-h" />
               <span className="fr-plus-v" />
             </button>
