@@ -5,20 +5,155 @@
 
 ---
 
-## Design Intent
-
-My design intent was authored in Figma before any code was written. The full visual spec — color palette, typography, component layout, hover states, and interaction rules — lives in the Figma file:
+## Design Intent / PRD — SAY YES to the Dress: Digital Fitting Room
 
 **Figma file:** [AI-Projects-Design-File — The Fitting Room](https://www.figma.com/proto/fTcwDkIUW4nyXE57DU8HQI/AI-Projects-Design-File?page-id=0%3A1&node-id=10-318&viewport=-3304%2C792%2C0.21&t=94g8EJtxDxuemhoQ-1&scaling=contain&content-scaling=fixed)
 
-**Summary of rules locked before AI engagement:**
+---
 
-- **Color palette:** Warm cream gradient background (`#f1f1f1 → #f9f7f1`), gold accents (`#c8a97e`, `#D3A550`), white panels
-- **Typography:** KyivType Sans throughout — 70px title, 50px subtitle, 26px CTA. No substitutions.
-- **Layout:** Fixed 1920×1080 canvas scaled via `transform: scale()` — all Figma coordinates used as-is
-- **Interaction rules:** Drag-and-drop to try on items (not click-to-place). Items placed as floating overlays with drag, resize, rotate, and × remove controls. Handles auto-hide after 5 seconds.
-- **Mood:** Bridal editorial — warm, elegant, unhurried. Nothing fast or jarring.
-- **Non-negotiables:** The body silhouette stays centered on the podium. The drag ghost must be visible. Handles must not cover the dress image.
+### 1. Project Overview
+
+**Purpose**
+The Fitting Room is an interactive bridal experience that allows users to explore and "try on" dresses in a digital environment that mimics the emotional and visual qualities of an in-person fitting. Beyond creating a beautiful experience, the platform is designed to help users save time and make more informed decisions before visiting a physical showroom, reducing uncertainty and improving the efficiency of in-person appointments.
+
+This project bridges digital exploration with physical decision-making, allowing users to arrive at showrooms with clarity, confidence, and a narrowed selection.
+
+**Goals**
+- Create a high-fidelity, editorial-like experience rather than a typical e-commerce interface
+- Enable users to preselect and explore dress options digitally, minimizing time spent browsing in the store
+- Support direct manipulation (drag, resize, rotate) to simulate real-world interaction with garments
+- Maintain visual elegance and emotional pacing aligned with bridal expectations
+- Ensure the experience feels intuitive without instructions
+
+**Success Metrics**
+- Users can identify preferred dress styles before visiting a showroom
+- Users successfully place and adjust at least one dress within seconds
+- Reduced decision fatigue during in-person fittings (validated through feedback)
+- No visual or interaction elements break immersion
+- Experience maintains full fidelity with the Figma design system
+
+---
+
+### 2. Target Audience
+
+**Primary Audience**
+- Brides or users exploring wedding dresses digitally
+- Users who value aesthetic, curated, and emotional experiences over speed
+
+**Secondary Audience**
+- Designers, stylists, or bridal brands exploring digital fitting concepts
+- Users familiar with touch-based or spatial interactions
+
+**User Mindset**
+- Wants to have potential bridal dress options narrowed before entering a showroom
+
+---
+
+### 3. Inspiration & Conceptual Foundation
+
+The Fitting Room is rooted in a blend of nostalgia, tactile play, and editorial storytelling.
+
+The interaction model draws inspiration from paper dolls and magazine cutouts — the act of selecting, placing, and adjusting garments directly onto a figure. This tactile behavior informed the decision to use drag-and-drop as the primary interaction, mimicking the physical experience of layering clothing onto a body.
+
+The experience is also influenced by early 2000s dress-up games, particularly those centered around characters like Barbie, where users could freely mix, match, and experiment with outfits in a playful, low-pressure environment. These experiences informed key design decisions:
+- Emphasis on freedom over restriction
+- Immediate visual feedback
+- Playful experimentation without consequences
+
+At the same time, the visual direction is grounded in bridal editorial aesthetics — soft gradients, gold accents, and minimal compositions reflecting the tone of high-end bridal campaigns and lookbooks.
+
+**Design Translation**
+
+These combined references translate into a system that is:
+- **Tactile** like paper dolls — drag, place, adjust
+- **Playful** like early dress-up games — freedom and exploration
+- **Refined** like editorial fashion — calm, elegant, intentional
+
+**Intent**
+The goal is to recreate the feeling of sitting on the floor, cutting outfits from magazines, or playing dress-up — but elevated into a modern, emotionally resonant digital experience.
+
+---
+
+### 4. Design System
+
+The design system for The Fitting Room was fully defined in Figma prior to any development. Every visual and structural decision — layout, typography, color, and component behavior — was created with clear intent and full design agency before being translated into code. The implementation phase focused on bringing predefined interactions to life, not generating or altering the design.
+
+**Color Palette**
+- Background: Warm gradient (`#f1f1f1 → #f9f7f1`)
+- Accents: Gold (`#c8a97e`, `#D3A550`)
+- Surfaces: White panels
+
+*Intent: Create a soft, warm, editorial atmosphere. Avoid harsh contrast or sterile interfaces.*
+
+**Typography**
+- Typeface: KyivType Sans (no substitutions)
+- Title: 70px · Subtitle: 50px · CTA: 26px
+
+*Intent: Typography reinforces luxury, clarity, and calm pacing.*
+
+**Layout System**
+- Base canvas: 1920×1080
+- Scaling: `transform: scale()`
+- Absolute positioning from Figma coordinates
+
+*Intent: Maintain pixel-perfect fidelity. This is a controlled, designed experience — not a responsive system.*
+
+**Logo and Branding**
+- Minimal, elegant, editorial-inspired
+- Gold-based palette aligned with system
+- Branding is subtle; the focus is the experience
+
+**Asset Strategy**
+- Dress assets were externally sourced and curated
+- Images treated as modular content within a fixed system
+- No changes were made to the core design system to accommodate assets
+
+*Intent: Content adapts to the system, not the system to content.*
+
+---
+
+### 5. Features and Interaction Requirements
+
+**Core Interaction — Dress Try-On**
+- Drag-and-drop (not click-to-place)
+- Drag ghost must always be visible during drag
+- Dresses appear as floating overlays on drop
+
+**Post-Placement Interactions**
+- Drag to reposition
+- Resize via 4 corner handles (opposite corner fixed)
+- Rotate via gold circle handle
+- Remove via × control
+
+**Interaction Behavior Rules**
+- Handles auto-hide after 5 seconds of inactivity
+- Reappear on any interaction (click, drag, resize, rotate)
+- Must remain minimal and never obstruct the dress
+
+**Visual Hierarchy Rules**
+- Body silhouette: always centered, acts as anchor
+- Dresses: layer above silhouette, must remain unobstructed
+
+**Motion and Feedback**
+- No fast or aggressive animations
+- Transitions should feel soft, deliberate, almost invisible
+
+*Intent: Interactions should feel like trying on a dress — not using software.*
+
+---
+
+### 6. Constraints and Non-Negotiables
+
+- No deviation from Figma layout or spacing
+- Body silhouette remains centered at all times
+- KyivType Sans is the only permitted typeface
+
+---
+
+### 7. Experience Principles
+
+1. **Direct Manipulation Over Abstraction** — Users interact with dresses as physical objects
+2. **Digital to Physical Continuity** — Supports real-world showroom decisions
 
 ---
 
