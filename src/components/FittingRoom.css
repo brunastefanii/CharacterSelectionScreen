@@ -216,18 +216,18 @@
 }
 
 .fr-congrats-text {
-  font-family: 'Inter', sans-serif;
+  font-family: 'KyivType Sans', 'Georgia', serif;
   font-size: 40px;
-  font-weight: 700;
+  font-weight: 400;
   color: #D3A550;
   margin: 0;
   white-space: nowrap;
 }
 
 .fr-congrats-sub {
-  font-family: 'Inter', sans-serif;
+  font-family: 'KyivType Sans', 'Georgia', serif;
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 400;
   color: #000;
   margin: 0;
   white-space: nowrap;
