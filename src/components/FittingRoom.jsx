@@ -95,6 +95,7 @@ export default function FittingRoom() {
   const [activeIcon, setActiveIcon] = useState(null)
   const [categoryItems, setCategoryItems] = useState(INITIAL_CATEGORY_ITEMS)
   const [isProcessing, setIsProcessing] = useState(false)
+  const [saidYes, setSaidYes] = useState(false)
 
   // Confetti
   const [showConfetti, setShowConfetti] = useState(false)
@@ -471,7 +472,10 @@ export default function FittingRoom() {
             key={id}
             className={`fr-icon-btn ${activeIcon === id ? 'fr-icon-btn--active' : ''}`}
             style={{ left, top }}
-            onClick={() => setActiveIcon(activeIcon === id ? null : id)}
+            onClick={() => {
+              setActiveIcon(activeIcon === id ? null : id)
+              if (id === 'dress') setSaidYes(false)
+            }}
             title={label}
           >
             <img src={icon} alt={label} draggable={false} />
@@ -480,11 +484,14 @@ export default function FittingRoom() {
 
         {/* Say yes CTA */}
         {placedItems.dress && (
-          <button className="fr-cta" onClick={() => setShowConfetti(true)}>SAY YES!</button>
+          <button
+            className={`fr-cta ${saidYes ? 'fr-cta--fadeout' : ''}`}
+            onClick={() => { setShowConfetti(true); setSaidYes(true) }}
+          >SAY YES!</button>
         )}
 
         {/* Right panel — visible when dress or hair icon is active */}
-        <div className={`fr-panel ${PANEL_ICONS.includes(activeIcon) ? 'fr-panel--visible' : ''}`}>
+        <div className={`fr-panel ${PANEL_ICONS.includes(activeIcon) && !saidYes ? 'fr-panel--visible' : ''}`}>
 
           {/* Item grid — shared across all categories */}
           {activeIcon && (
