@@ -9,7 +9,7 @@
 
 My design intent was authored in Figma before any code was written. The full visual spec — color palette, typography, component layout, hover states, and interaction rules — lives in the Figma file:
 
-**Figma file:** [AI-Projects-Design-File — node 10:318](https://www.figma.com/design/fTcwDkIUW4nyXE57DU8HQI/AI-Projects-Design-File?node-id=10-318)
+**Figma file:** [AI-Projects-Design-File — The Fitting Room](https://www.figma.com/proto/fTcwDkIUW4nyXE57DU8HQI/AI-Projects-Design-File?page-id=0%3A1&node-id=10-318&viewport=-3304%2C792%2C0.21&t=94g8EJtxDxuemhoQ-1&scaling=contain&content-scaling=fixed)
 
 **Summary of rules locked before AI engagement:**
 
