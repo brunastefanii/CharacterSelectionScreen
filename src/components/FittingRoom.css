@@ -403,7 +403,7 @@
   left: 1508px;
   top: 165px;
   width: 273px;
-  height: 643px;
+  height: 712px;
   background: #fff;
   display: flex;
   flex-direction: column;
@@ -415,12 +415,6 @@
 }
 
 .fr-panel--visible {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateX(0);
-}
-
-.fr-panel-footer--visible {
   opacity: 1;
   pointer-events: auto;
   transform: translateX(0);
@@ -480,20 +474,12 @@
    Panel footer with Add button
    ───────────────────────────────────────────── */
 .fr-panel-footer {
-  position: absolute;
-  left: 1508px;
-  top: 830.27px;
-  width: 273.497px;
   height: 69.799px;
   background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 5;
-  opacity: 0;
-  pointer-events: none;
-  transform: translateX(16px);
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  flex-shrink: 0;
 }
 
 .fr-add-btn {
