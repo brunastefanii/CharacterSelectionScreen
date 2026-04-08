@@ -208,23 +208,28 @@
    ───────────────────────────────────────────── */
 .fr-congrats {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  left: 1508px;
+  top: 165px;
+  width: 273px;
+  height: 712px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   z-index: 10;
   animation: fr-fade-in 0.8s ease forwards;
   pointer-events: none;
+  gap: 20px;
 }
 
 .fr-congrats-text {
   font-family: 'KyivType Sans', 'Georgia', serif;
   font-size: 72px;
   font-weight: 400;
-  color: #C8A97E;
+  color: #D3A550;
   margin: 0;
   line-height: 1.1;
-  white-space: nowrap;
 }
 
 .fr-congrats-sub {
@@ -232,8 +237,8 @@
   font-size: 40px;
   font-weight: 400;
   color: #000;
-  margin: 16px 0 0;
-  white-space: nowrap;
+  margin: 0;
+  line-height: 1.3;
 }
 
 /* ─────────────────────────────────────────────

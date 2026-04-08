@@ -491,7 +491,7 @@ export default function FittingRoom() {
             style={{ left, top }}
             onClick={() => {
               setActiveIcon(activeIcon === id ? null : id)
-              if (id === 'dress') setSaidYes(false)
+              setSaidYes(false)
             }}
             title={label}
           >
@@ -510,8 +510,8 @@ export default function FittingRoom() {
         {/* Congratulations message — appears after confetti finishes */}
         {saidYes && !showConfetti && (
           <div className="fr-congrats">
-            <p className="fr-congrats-text">Congratulations!</p>
-            <p className="fr-congrats-sub">You said YES, to the dress!</p>
+            <p className="fr-congrats-text">CONGRATULATIONS!</p>
+            <p className="fr-congrats-sub">It's official. You said YES to the dress</p>
           </div>
         )}
 
