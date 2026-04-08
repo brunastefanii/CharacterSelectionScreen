@@ -101,7 +101,6 @@ export default function FittingRoom() {
   const audioTimerRef = useRef(null)
 
   // Face camera
-  const [faceSrc, setFaceSrc] = useState(null)
   const [showCamera, setShowCamera] = useState(false)
   const videoRef = useRef(null)
   const streamRef = useRef(null)
@@ -137,7 +136,19 @@ export default function FittingRoom() {
     canvas.height = video.videoHeight
     const ctx = canvas.getContext('2d')
     ctx.drawImage(video, 0, 0)
-    setFaceSrc(canvas.toDataURL('image/png'))
+    // Place captured face into placedItems at the face input's position
+    setPlacedItems(prev => ({
+      ...prev,
+      face: {
+        src: canvas.toDataURL('image/png'),
+        x: 986.25,   // 959.5 + 53.501/2
+        y: 355.57,   // 315.15 + 80.846/2
+        width: 53.501,
+        height: 80.846,
+        rotation: 0,
+      },
+    }))
+    revealHandles('face')
     closeCamera()
   }
 
@@ -496,21 +507,18 @@ export default function FittingRoom() {
           <img src={body} alt="character" draggable={false} />
         </div>
 
-        {/* Face input — click to capture */}
-        <div className="fr-face-input" onClick={openCamera} title="Click to take a photo">
-          <img
-            src={faceSrc ?? faceInput}
-            alt="face"
-            draggable={false}
-            className={faceSrc ? 'fr-face-captured' : ''}
-          />
-        </div>
+        {/* Face input — click to capture (hidden once a face is placed) */}
+        {!placedItems.face && (
+          <div className="fr-face-input" onClick={openCamera} title="Click to take a photo">
+            <img src={faceInput} alt="face" draggable={false} />
+          </div>
+        )}
 
         {/* Placed items — one per category */}
         {Object.entries(placedItems).map(([category, item]) => (
           <div
             key={category}
-            className="fr-placed"
+            className={`fr-placed ${category === 'face' ? 'fr-placed--face' : ''}`}
             style={{
               left: item.x - item.width / 2,
               top:  item.y - item.height / 2,
