@@ -188,8 +188,8 @@
 }
 
 .fr-camera-video {
-  width: 400px;
-  height: 400px;
+  width: 320px;
+  height: 480px;
   border-radius: 50%;
   object-fit: cover;
   transform: scaleX(-1);
