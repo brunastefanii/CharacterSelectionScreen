@@ -415,15 +415,13 @@ export default function FittingRoom() {
                   title="Drag to body to try on"
                 >
                   <img src={item.src} alt={`${activeIcon} ${i + 1}`} draggable={false} />
-                  {item.isUploaded && (
-                    <div
-                      role="button"
-                      className="fr-item-delete"
-                      onMouseDown={e => e.stopPropagation()}
-                      onClick={e => { e.stopPropagation(); handleDeleteItem(activeIcon, item.id) }}
-                      title="Remove"
-                    >×</div>
-                  )}
+                  <div
+                    role="button"
+                    className="fr-item-delete"
+                    onMouseDown={e => e.stopPropagation()}
+                    onClick={e => { e.stopPropagation(); handleDeleteItem(activeIcon, item.id) }}
+                    title="Remove"
+                  >×</div>
                 </button>
               ))}
             </div>
