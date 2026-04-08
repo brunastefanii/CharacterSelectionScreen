@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { removeBackground } from '@imgly/background-removal'
 import './FittingRoom.css'
+import weddingMarch from '../assets/Classicals.de - Mendelssohn, Felix - Wedding March - Op. 61, No. 9 - Arranged for Piano.mp3'
 
 import dress1 from '../assets/dress1.png'
 import dress2 from '../assets/dress2.png'
@@ -96,6 +97,22 @@ export default function FittingRoom() {
   const [categoryItems, setCategoryItems] = useState(INITIAL_CATEGORY_ITEMS)
   const [isProcessing, setIsProcessing] = useState(false)
   const [saidYes, setSaidYes] = useState(false)
+  const audioRef = useRef(null)
+  const audioTimerRef = useRef(null)
+
+  function playWeddingMarch() {
+    if (!audioRef.current) {
+      audioRef.current = new Audio(weddingMarch)
+      audioRef.current.volume = 0.7
+    }
+    audioRef.current.currentTime = 0
+    audioRef.current.play()
+    clearTimeout(audioTimerRef.current)
+    audioTimerRef.current = setTimeout(() => {
+      audioRef.current.pause()
+      audioRef.current.currentTime = 0
+    }, 20000)
+  }
 
   // Confetti
   const [showConfetti, setShowConfetti] = useState(false)
@@ -486,7 +503,7 @@ export default function FittingRoom() {
         {placedItems.dress && (
           <button
             className={`fr-cta ${saidYes ? 'fr-cta--fadeout' : ''}`}
-            onClick={() => { setShowConfetti(true); setSaidYes(true) }}
+            onClick={() => { setShowConfetti(true); setSaidYes(true); playWeddingMarch() }}
           >SAY YES!</button>
         )}
 
