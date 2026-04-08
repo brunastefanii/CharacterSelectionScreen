@@ -96,6 +96,14 @@ export default function FittingRoom() {
   const [categoryItems, setCategoryItems] = useState(INITIAL_CATEGORY_ITEMS)
   const [isProcessing, setIsProcessing] = useState(false)
 
+  // Say yes state — fades out button + panel
+  const [saidYes, setSaidYes] = useState(false)
+
+  // Reset if the dress is removed from the stage
+  useEffect(() => {
+    if (!placedItems.dress) setSaidYes(false)
+  }, [placedItems.dress])
+
   // Confetti
   const [showConfetti, setShowConfetti] = useState(false)
   const confettiCanvasRef = useRef(null)
@@ -480,11 +488,14 @@ export default function FittingRoom() {
 
         {/* Say yes CTA */}
         {placedItems.dress && (
-          <button className="fr-cta" onClick={() => setShowConfetti(true)}>SAY YES!</button>
+          <button
+            className={`fr-cta ${saidYes ? 'fr-cta--fadeout' : ''}`}
+            onClick={() => { setSaidYes(true); setShowConfetti(true) }}
+          >SAY YES!</button>
         )}
 
         {/* Right panel — visible when dress or hair icon is active */}
-        <div className={`fr-panel ${PANEL_ICONS.includes(activeIcon) ? 'fr-panel--visible' : ''}`}>
+        <div className={`fr-panel ${PANEL_ICONS.includes(activeIcon) ? 'fr-panel--visible' : ''} ${saidYes ? 'fr-panel--fadeout' : ''}`}>
 
           {/* Item grid — shared across all categories */}
           {activeIcon && (
