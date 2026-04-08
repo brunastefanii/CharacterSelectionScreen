@@ -1,10 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { removeBackground } from '@imgly/background-removal'
-import { pipeline, env } from '@huggingface/transformers'
 import './FittingRoom.css'
-
-// Allow only remote models (no local model loading)
-env.allowLocalModels = false
 
 import dress1 from '../assets/dress1.png'
 import dress2 from '../assets/dress2.png'
@@ -79,91 +75,6 @@ const HAIR_OPTIONS = [
 
 const PANEL_ICONS = ['dress', 'hair']
 
-// ── Clothing segmentation ─────────────────────────────────────────────────────
-// Labels from Xenova/segformer-b2-clothes (ATR dataset) that are clothing items
-const CLOTHING_LABELS = new Set([
-  'upper-clothes', 'skirt', 'pants', 'dress', 'belt',
-  'left-shoe', 'right-shoe', 'bag', 'scarf',
-])
-
-let _segPipeline = null
-async function getSegPipeline() {
-  if (!_segPipeline) {
-    _segPipeline = await pipeline(
-      'image-segmentation',
-      'Xenova/segformer-b2-clothes',
-      { device: 'wasm' },
-    )
-  }
-  return _segPipeline
-}
-
-// Extract only dress/clothing pixels from a File; returns a PNG Blob
-async function isolateDress(file) {
-  const objectUrl = URL.createObjectURL(file)
-  let segments
-  try {
-    const seg = await getSegPipeline()
-    segments = await seg(objectUrl)
-  } finally {
-    URL.revokeObjectURL(objectUrl)
-  }
-
-  const clothingSegs = segments.filter(s =>
-    CLOTHING_LABELS.has(s.label.toLowerCase().replace(/\s+/g, '-'))
-  )
-  if (clothingSegs.length === 0) return null // no clothing found → fall back
-
-  // Load original image onto a canvas
-  const imgUrl = URL.createObjectURL(file)
-  const img = await new Promise((res, rej) => {
-    const el = new Image()
-    el.onload = () => res(el)
-    el.onerror = rej
-    el.src = imgUrl
-  })
-  URL.revokeObjectURL(imgUrl)
-
-  const W = img.naturalWidth
-  const H = img.naturalHeight
-  const canvas = document.createElement('canvas')
-  canvas.width = W
-  canvas.height = H
-  const ctx = canvas.getContext('2d')
-  ctx.drawImage(img, 0, 0)
-
-  const imageData = ctx.getImageData(0, 0, W, H)
-  const pixels = imageData.data
-
-  // Build a combined clothing mask (union of all clothing segment masks)
-  const firstMask = clothingSegs[0].mask
-  const mW = firstMask.width
-  const mH = firstMask.height
-  const combined = new Uint8Array(mW * mH)
-  for (const cs of clothingSegs) {
-    const d = cs.mask.data
-    for (let i = 0; i < d.length; i++) {
-      if (d[i] > 0) combined[i] = 1
-    }
-  }
-
-  // Zero-out (make transparent) any pixel not covered by the clothing mask
-  const scaleX = mW / W
-  const scaleY = mH / H
-  for (let y = 0; y < H; y++) {
-    for (let x = 0; x < W; x++) {
-      const mx = Math.min(Math.round(x * scaleX), mW - 1)
-      const my = Math.min(Math.round(y * scaleY), mH - 1)
-      if (!combined[my * mW + mx]) {
-        pixels[(y * W + x) * 4 + 3] = 0
-      }
-    }
-  }
-
-  ctx.putImageData(imageData, 0, 0)
-  return new Promise(resolve => canvas.toBlob(resolve, 'image/png'))
-}
-
 export default function FittingRoom() {
   const wrapperRef = useRef(null)
   const canvasRef = useRef(null)
@@ -171,7 +82,6 @@ export default function FittingRoom() {
   const [activeIcon, setActiveIcon] = useState(null)
   const [dresses, setDresses] = useState(INITIAL_DRESSES)
   const [isProcessing, setIsProcessing] = useState(false)
-  const [processingLabel, setProcessingLabel] = useState('Processing…')
 
   // Ghost drag from panel: { src, ghostX, ghostY, category }
   const [panelDrag, setPanelDrag] = useState(null)
@@ -351,10 +261,7 @@ export default function FittingRoom() {
     })
   }
 
-  // ── Add dress from file ───────────────────────────────────────────────────
-  // Pipeline: clothing segmentation on original → dress-only PNG
-  // Fallback 1: removeBackground if segmentation finds nothing
-  // Fallback 2: original image if everything fails
+  // ── Add dress from file with background removal ───────────────────────────
   function handleAddDress() {
     const input = document.createElement('input')
     input.type = 'file'
@@ -364,23 +271,13 @@ export default function FittingRoom() {
       if (!file) return
       setIsProcessing(true)
       try {
-        setProcessingLabel('Isolating dress…')
-        const dressBlob = await isolateDress(file)
-
-        let url
-        if (dressBlob) {
-          url = URL.createObjectURL(dressBlob)
-        } else {
-          // Segmentation found no clothing → fall back to background removal
-          setProcessingLabel('Removing background…')
-          const bgBlob = await removeBackground(file)
-          url = URL.createObjectURL(bgBlob)
-        }
-
-        setDresses(prev => [...prev, { id: Date.now(), src: url, isUploaded: true }])
+        const blob = await removeBackground(file)
+        const url = URL.createObjectURL(blob)
+        setDresses(prev => [...prev, { id: Date.now(), src: url }])
       } catch (err) {
-        console.error('Processing failed:', err)
-        setDresses(prev => [...prev, { id: Date.now(), src: URL.createObjectURL(file), isUploaded: true }])
+        console.error('Background removal failed:', err)
+        // Fall back to original image if processing fails
+        setDresses(prev => [...prev, { id: Date.now(), src: URL.createObjectURL(file) }])
       } finally {
         setIsProcessing(false)
       }
@@ -419,7 +316,7 @@ export default function FittingRoom() {
           <div className="fr-processing">
             <div className="fr-processing-card">
               <div className="fr-processing-spinner" />
-              <p className="fr-processing-label">{processingLabel}</p>
+              <p className="fr-processing-label">Removing background…</p>
               <p className="fr-processing-sub">Your dress will be ready in a moment</p>
             </div>
           </div>
@@ -494,18 +391,6 @@ export default function FittingRoom() {
                   title="Drag to body to try on"
                 >
                   <img src={dress.src} alt={`Dress ${i + 1}`} draggable={false} />
-                  {dress.isUploaded && (
-                    <div
-                      role="button"
-                      className="fr-dress-delete"
-                      onMouseDown={e => e.stopPropagation()}
-                      onClick={e => {
-                        e.stopPropagation()
-                        setDresses(prev => prev.filter(d => d.id !== dress.id))
-                      }}
-                      title="Remove"
-                    >×</div>
-                  )}
                 </button>
               ))}
             </div>
