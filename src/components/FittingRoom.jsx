@@ -96,6 +96,77 @@ export default function FittingRoom() {
   const [categoryItems, setCategoryItems] = useState(INITIAL_CATEGORY_ITEMS)
   const [isProcessing, setIsProcessing] = useState(false)
 
+  // Confetti
+  const [showConfetti, setShowConfetti] = useState(false)
+  const confettiCanvasRef = useRef(null)
+  const confettiAnimRef = useRef(null)
+
+  useEffect(() => {
+    if (!showConfetti) return
+    const canvas = confettiCanvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+
+    const COLORS = ['#FFD700', '#FFC200', '#C8A97E', '#E5B800', '#FFE566', '#D4AF37', '#FFF0A0']
+    const particles = Array.from({ length: 180 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * -canvas.height * 0.6,
+      w: Math.random() * 14 + 6,
+      h: Math.random() * 7 + 4,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      rotation: Math.random() * Math.PI * 2,
+      rotSpeed: (Math.random() - 0.5) * 0.18,
+      vx: (Math.random() - 0.5) * 2.5,
+      vy: Math.random() * 2.5 + 1.5,
+      shape: Math.random() > 0.4 ? 'rect' : 'circle',
+      opacity: 1,
+    }))
+
+    const DURATION = 4200
+    let startTime = null
+
+    function animate(ts) {
+      if (!startTime) startTime = ts
+      const elapsed = ts - startTime
+      const progress = elapsed / DURATION
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+      for (const p of particles) {
+        p.x += p.vx
+        p.y += p.vy
+        p.vy += 0.06
+        p.rotation += p.rotSpeed
+        p.opacity = progress > 0.7 ? 1 - (progress - 0.7) / 0.3 : 1
+
+        ctx.save()
+        ctx.globalAlpha = Math.max(0, p.opacity)
+        ctx.fillStyle = p.color
+        ctx.translate(p.x, p.y)
+        ctx.rotate(p.rotation)
+        if (p.shape === 'circle') {
+          ctx.beginPath()
+          ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2)
+          ctx.fill()
+        } else {
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h)
+        }
+        ctx.restore()
+      }
+
+      if (elapsed < DURATION) {
+        confettiAnimRef.current = requestAnimationFrame(animate)
+      } else {
+        setShowConfetti(false)
+      }
+    }
+
+    confettiAnimRef.current = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(confettiAnimRef.current)
+  }, [showConfetti])
+
   // Ghost drag from panel: { src, ghostX, ghostY, category }
   const [panelDrag, setPanelDrag] = useState(null)
 
@@ -409,7 +480,7 @@ export default function FittingRoom() {
 
         {/* Say yes CTA */}
         {placedItems.dress && (
-          <button className="fr-cta">SAY YES!</button>
+          <button className="fr-cta" onClick={() => setShowConfetti(true)}>SAY YES!</button>
         )}
 
         {/* Right panel — visible when dress or hair icon is active */}
@@ -449,6 +520,11 @@ export default function FittingRoom() {
           </div>
         </div>
       </div>
+
+      {/* Confetti — fixed to viewport */}
+      {showConfetti && (
+        <canvas ref={confettiCanvasRef} className="fr-confetti" />
+      )}
 
       {/* Drag ghost — fixed to viewport */}
       {panelDrag && (
