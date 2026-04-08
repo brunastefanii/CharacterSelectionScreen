@@ -21,13 +21,16 @@ import hair8 from '../assets/hair8.png'
 import podium from '../assets/podium.png'
 import body from '../assets/body.png'
 import wheel from '../assets/wheel.svg'
-import iconHair from '../assets/icon-hair.png'
-import iconMakeup from '../assets/icon-makeup.png'
-import iconJewelry from '../assets/icon-jewelry.png'
-import iconDress from '../assets/icon-dress.png'
-import iconShoes from '../assets/icon-shoes.png'
-import iconBouquet from '../assets/icon-bouquet.png'
-import iconAccessory from '../assets/icon-accessory.png'
+import logoHanger from '../assets/logo-hanger.png'
+import logoText from '../assets/logo-text.png'
+import faceInput from '../assets/face-input.png'
+import iconHair from '../assets/icon-hair-new.png'
+import iconMakeup from '../assets/icon-makeup-new.png'
+import iconJewelry from '../assets/icon-jewelry-new.png'
+import iconDress from '../assets/icon-dress-new.png'
+import iconVeil from '../assets/icon-veil.png'
+import iconShoes from '../assets/icon-shoes-new.png'
+import iconBouquet from '../assets/icon-bouquet-new.png'
 
 const DESIGN_WIDTH = 1920
 const DESIGN_HEIGHT = 1080
@@ -35,13 +38,13 @@ const DESIGN_HEIGHT = 1080
 const DROP_ZONE = { left: 668, top: 202, right: 1464, bottom: 1000 }
 
 const ACCESSORY_ICONS = [
-  { id: 'hair',      label: 'Hair',      icon: iconHair,      left: 797.63,  top: 263.25 },
-  { id: 'dress',     label: 'Dress',     icon: iconDress,     left: 917.99,  top: 216.96 },
-  { id: 'shoes',     label: 'Shoes',     icon: iconShoes,     left: 1051.18, top: 279.63 },
-  { id: 'accessory', label: 'Accessory', icon: iconAccessory, left: 1094.63, top: 382.91 },
-  { id: 'bouquet',   label: 'Bouquet',   icon: iconBouquet,   left: 1062.58, top: 498.29 },
-  { id: 'jewelry',   label: 'Jewelry',   icon: iconJewelry,   left: 771.27,  top: 498.29 },
-  { id: 'makeup',    label: 'Makeup',    icon: iconMakeup,    left: 744.21,  top: 382.91 },
+  { id: 'hair',    label: 'Hair',    icon: iconHair,    left: 792.94,  top: 240.57 },
+  { id: 'dress',   label: 'Dress',   icon: iconDress,   left: 953.03,  top: 175.19 },
+  { id: 'veil',    label: 'Veil',    icon: iconVeil,    left: 1104.28, top: 236.56 },
+  { id: 'shoes',   label: 'Shoes',   icon: iconShoes,   left: 1157.63, top: 363.37 },
+  { id: 'bouquet', label: 'Bouquet', icon: iconBouquet, left: 1118.27, top: 505.04 },
+  { id: 'jewelry', label: 'Jewelry', icon: iconJewelry, left: 760.58,  top: 505.04 },
+  { id: 'makeup',  label: 'Makeup',  icon: iconMakeup,  left: 727.35,  top: 363.37 },
 ]
 
 // Default drop size per category
@@ -76,13 +79,13 @@ const HAIR_OPTIONS = [
 const PANEL_ICONS = ['dress', 'hair', 'shoes', 'makeup', 'bouquet', 'jewelry', 'accessory']
 
 const INITIAL_CATEGORY_ITEMS = {
-  dress:     INITIAL_DRESSES.map(d => ({ ...d })),
-  hair:      HAIR_OPTIONS.map(h => ({ ...h })),
-  shoes:     [],
-  makeup:    [],
-  bouquet:   [],
-  jewelry:   [],
-  accessory: [],
+  dress:   INITIAL_DRESSES.map(d => ({ ...d })),
+  hair:    HAIR_OPTIONS.map(h => ({ ...h })),
+  veil:    [],
+  shoes:   [],
+  makeup:  [],
+  bouquet: [],
+  jewelry: [],
 }
 
 export default function FittingRoom() {
@@ -319,11 +322,15 @@ export default function FittingRoom() {
         {/* Background */}
         <div className="fr-bg" />
 
-        {/* Title */}
-        <h1 className="fr-title">
-          <span className="fr-title-main">SAY YES</span>
-          <span className="fr-title-sub">to the dress</span>
-        </h1>
+        {/* Logo */}
+        <div className="fr-logo">
+          <div className="fr-logo-hanger">
+            <img src={logoHanger} alt="" draggable={false} />
+          </div>
+          <div className="fr-logo-text">
+            <img src={logoText} alt="Say Yes to the Dress" draggable={false} />
+          </div>
+        </div>
 
         {/* Podium */}
         <div className="fr-podium">
@@ -349,6 +356,11 @@ export default function FittingRoom() {
         {/* Body silhouette */}
         <div className="fr-body">
           <img src={body} alt="character" draggable={false} />
+        </div>
+
+        {/* Face input placeholder */}
+        <div className="fr-face-input">
+          <img src={faceInput} alt="" draggable={false} />
         </div>
 
         {/* Placed items — one per category */}
@@ -396,7 +408,7 @@ export default function FittingRoom() {
         ))}
 
         {/* Say yes CTA */}
-        <button className="fr-cta">Say, yes!</button>
+        <button className="fr-cta">SAY YES!</button>
 
         {/* Right panel — visible when dress or hair icon is active */}
         <div className={`fr-panel ${PANEL_ICONS.includes(activeIcon) ? 'fr-panel--visible' : ''}`}>

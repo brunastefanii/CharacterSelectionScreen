@@ -27,35 +27,53 @@
 .fr-bg {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to right, #f2f2f2 8.655%, #f9f7f1 100%);
+  background: linear-gradient(180deg, #f1f1f1 0%, #f9f7f1 30.135%, #f9f7f1 71.228%, #f1f1f1 100%);
 }
 
 /* ─────────────────────────────────────────────
-   Title
+   Logo (left side)
    ───────────────────────────────────────────── */
-.fr-title {
+.fr-logo {
   position: absolute;
-  left: 616px;
-  top: 52px;
-  font-weight: 400;
-  line-height: 1;
-  white-space: nowrap;
-  z-index: 1;
+  left: 80px;
+  top: 284px;
+  width: 484.529px;
   display: flex;
-  align-items: baseline;
-  gap: 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  z-index: 1;
 }
 
-.fr-title-main {
-  font-family: 'KyivType Sans', 'Georgia', serif;
-  font-size: 70px;
-  color: #000;
+.fr-logo-hanger {
+  width: 100%;
+  aspect-ratio: 976 / 317;
+  position: relative;
+  overflow: hidden;
 }
 
-.fr-title-sub {
-  font-family: 'KyivType Sans', 'Georgia', serif;
-  font-size: 50px;
-  color: #000;
+.fr-logo-hanger img {
+  position: absolute;
+  height: 323.03%;
+  left: -27.25%;
+  top: -58.04%;
+  width: 157.38%;
+  max-width: none;
+}
+
+.fr-logo-text {
+  width: 100%;
+  aspect-ratio: 976 / 386;
+  position: relative;
+  overflow: hidden;
+}
+
+.fr-logo-text img {
+  position: absolute;
+  height: 265.28%;
+  left: -27.25%;
+  top: -80.57%;
+  width: 157.38%;
+  max-width: none;
 }
 
 /* ─────────────────────────────────────────────
@@ -63,10 +81,10 @@
    ───────────────────────────────────────────── */
 .fr-podium {
   position: absolute;
-  left: 668px;
-  top: 297.44px;
-  width: 584.742px;
-  height: 667.361px;
+  left: 625px;
+  top: 282.55px;
+  width: 718px;
+  height: 819.447px;
   overflow: hidden;
   pointer-events: none;
 }
@@ -86,10 +104,10 @@
    ───────────────────────────────────────────── */
 .fr-wheel {
   position: absolute;
-  left: 729.96px;
-  top: 202px;
-  width: 429.475px;
-  height: 429.475px;
+  left: 709.86px;
+  top: 165.36px;
+  width: 527.35px;
+  height: 527.35px;
   pointer-events: none;
   z-index: 2;
 }
@@ -104,10 +122,10 @@
    ───────────────────────────────────────────── */
 .fr-body {
   position: absolute;
-  left: 870.27px;
-  top: 315.24px;
-  width: 168.799px;
-  height: 510.67px;
+  left: 884.6px;
+  top: 304.42px;
+  width: 207.267px;
+  height: 627.048px;
   overflow: hidden;
   pointer-events: none;
   z-index: 3;
@@ -120,6 +138,25 @@
   top: -21.2%;
   width: 259.11%;
   max-width: none;
+}
+
+/* ─────────────────────────────────────────────
+   Face input placeholder
+   ───────────────────────────────────────────── */
+.fr-face-input {
+  position: absolute;
+  left: 959.5px;
+  top: 315.15px;
+  width: 53.501px;
+  height: 80.846px;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.fr-face-input img {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 /* ─────────────────────────────────────────────
@@ -303,9 +340,9 @@
    ───────────────────────────────────────────── */
 .fr-icon-btn {
   position: absolute;
-  width: 53.417px;
-  height: 53.417px;
-  border-radius: 26.709px;
+  width: 65.591px;
+  height: 65.591px;
+  border-radius: 32.795px;
   background: #fff;
   border: none;
   cursor: pointer;
@@ -339,15 +376,14 @@
    ───────────────────────────────────────────── */
 .fr-cta {
   position: absolute;
-  left: 818px;
-  top: 965px;
-  width: 260px;
-  height: 66.354px;
-  background: #d9d9d9;
+  left: 1503px;
+  top: 928.7px;
+  width: 278px;
+  height: 70.948px;
+  background: #fff;
   border: none;
-  border-radius: 16.009px;
   font-family: 'KyivType Sans', 'Georgia', serif;
-  font-size: 25px;
+  font-size: 26.731px;
   font-weight: 400;
   color: #000;
   cursor: pointer;
@@ -356,7 +392,7 @@
 }
 
 .fr-cta:hover {
-  background: #c8c8c8;
+  background: #f5f5f5;
 }
 
 /* ─────────────────────────────────────────────
@@ -364,11 +400,11 @@
    ───────────────────────────────────────────── */
 .fr-panel {
   position: absolute;
-  left: 1464px;
-  top: 202px;
+  left: 1508px;
+  top: 165px;
   width: 273px;
-  height: 725px;
-  background: #d9d9d9;
+  height: 712px;
+  background: #fff;
   display: flex;
   flex-direction: column;
   z-index: 5;
@@ -407,7 +443,7 @@
    Item cards (shared: dress & hair)
    ───────────────────────────────────────────── */
 .fr-item-card {
-  background: #fff;
+  background: #f1f1f1;
   border: none;
   cursor: grab;
   position: relative;
@@ -439,7 +475,7 @@
    ───────────────────────────────────────────── */
 .fr-panel-footer {
   height: 69.799px;
-  background: #d9d9d9;
+  background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
