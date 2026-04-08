@@ -62,6 +62,7 @@ Full "SAY YES to the dress" Fitting Room screen implemented from Figma (file `fT
 | 9 | Fixed Vite WASM issue (`optimizeDeps: { exclude: ['@huggingface/transformers'] }`), simplified to single-pass segmentation on original image: `segformer-b2-clothes` → clothing mask → zero non-clothing pixels (no `removeBackground` needed); fallback chain to `removeBackground` then raw file; hover-to-delete for uploaded dresses | "This is not what I wanted." — approach direction was wrong, not just a technical fix | Reverted via `git revert HEAD` |
 | 10 | Broke panel and + footer into two separate absolute elements with a 22px gap (matching Figma nodes 31:434 and 31:448 being separate rectangles) | "+ button disappeared" — the footer was placed outside the scaled canvas transform, making it invisible | Reverted via `git revert HEAD` |
 | 11 | Added `saidYes` state + `useEffect` watching `placedItems.dress` to reset it; applied `fr-panel--fadeout` and `fr-cta--fadeout` classes on click | "The page is blank" — the `useEffect` dependency on `placedItems.dress` caused a render loop or crash that wiped the entire page | Reverted via `git revert HEAD` |
+| 12 | When positioning the congrats text from Figma node 59:847, also changed font from KyivType Sans to Inter Bold without being asked | User only requested position changes — font was never part of the ask | Reverted font to KyivType Sans 400; going forward must explicitly confirm any design element changes (font, color, size, weight) not directly requested before committing |
 
 ---
 
