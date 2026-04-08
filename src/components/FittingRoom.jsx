@@ -408,7 +408,9 @@ export default function FittingRoom() {
         ))}
 
         {/* Say yes CTA */}
-        <button className="fr-cta">SAY YES!</button>
+        {placedItems.dress && (
+          <button className="fr-cta">SAY YES!</button>
+        )}
 
         {/* Right panel — visible when dress or hair icon is active */}
         <div className={`fr-panel ${PANEL_ICONS.includes(activeIcon) ? 'fr-panel--visible' : ''}`}>

@@ -198,6 +198,11 @@
   to { transform: rotate(360deg); }
 }
 
+@keyframes fr-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 .fr-processing-label {
   font-family: 'KyivType Sans', 'Georgia', serif;
   font-size: 32px;
@@ -378,6 +383,7 @@
   position: absolute;
   left: 1503px;
   top: 928.7px;
+  animation: fr-fade-in 0.3s ease;
   width: 278px;
   height: 70.948px;
   background: #fff;
